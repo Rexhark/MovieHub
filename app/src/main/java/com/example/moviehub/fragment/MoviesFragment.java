@@ -19,7 +19,6 @@ import com.example.moviehub.model.Movie;
 import java.util.List;
 
 public class MoviesFragment extends Fragment {
-    private List<Movie> nowPlayingMoviesList, popularMoviesList, topRatedMoviesList, upcomingMoviesList;
     RecyclerView rvNowPlaying, rvPopular, rvTopRated, rvUpcoming;
     public MoviesFragment() {
         // Required empty public constructor
@@ -39,15 +38,15 @@ public class MoviesFragment extends Fragment {
         rvTopRated = view.findViewById(R.id.rv_top_rated);
         rvUpcoming = view.findViewById(R.id.rv_upcoming);
 
-        nowPlayingMoviesList = ((MainActivity) requireActivity()).getNowPlayingMoviesList();
-        popularMoviesList = ((MainActivity) requireActivity()).getPopularMoviesList();
-        topRatedMoviesList = ((MainActivity) requireActivity()).getTopRatedMoviesList();
-        upcomingMoviesList = ((MainActivity) requireActivity()).getUpcomingMoviesList();
+        List<Movie> nowPlayingMoviesList = ((MainActivity) requireActivity()).getNowPlayingMoviesList();
+        List<Movie> popularMoviesList = ((MainActivity) requireActivity()).getPopularMoviesList();
+        List<Movie> topRatedMoviesList = ((MainActivity) requireActivity()).getTopRatedMoviesList();
+        List<Movie> upcomingMoviesList = ((MainActivity) requireActivity()).getUpcomingMoviesList();
 
-        HListAdapter adapter = new HListAdapter(getContext(),nowPlayingMoviesList);
-        VListAdapter adapter2 = new VListAdapter(getContext(),popularMoviesList);
-        VListAdapter adapter3 = new VListAdapter(getContext(),topRatedMoviesList);
-        HListAdapter2 adapter4 = new HListAdapter2(getContext(),upcomingMoviesList);
+        HListAdapter adapter = new HListAdapter(getContext(), nowPlayingMoviesList);
+        VListAdapter adapter2 = new VListAdapter(getContext(), popularMoviesList);
+        VListAdapter adapter3 = new VListAdapter(getContext(), topRatedMoviesList);
+        HListAdapter2 adapter4 = new HListAdapter2(getContext(), upcomingMoviesList);
 
         rvNowPlaying.setAdapter(adapter);
         rvPopular.setAdapter(adapter2);

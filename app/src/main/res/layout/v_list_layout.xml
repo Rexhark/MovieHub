@@ -6,10 +6,10 @@
     android:orientation="horizontal">
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="80dp"
+        android:layout_width="75dp"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
-        app:cardCornerRadius="20dp"
+        app:cardCornerRadius="12dp"
         app:strokeWidth="0dp">
         <ImageView
             android:id="@+id/iv_poster"

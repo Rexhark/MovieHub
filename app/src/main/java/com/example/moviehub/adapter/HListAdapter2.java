@@ -13,15 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.model.Movie;
+import com.example.moviehub.model.TVShow;
 
 import java.util.List;
 
 public class HListAdapter2 extends RecyclerView.Adapter<HListAdapter2.ViewHolder>{
 
-    private final List<Movie> items;
+    private final List<?> items;
     private final Context context;
 
-    public HListAdapter2(Context context, List<Movie> items) {
+    public HListAdapter2(Context context, List<?> items) {
         this.context = context;
         this.items = items;
     }
@@ -36,8 +37,17 @@ public class HListAdapter2 extends RecyclerView.Adapter<HListAdapter2.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull HListAdapter2.ViewHolder holder, int position) {
 
-        String title = items.get(position).getTitle();
-        String poster = "https://image.tmdb.org/t/p/w500" + items.get(position).getPosterPath();
+        String title = "", poster = "";
+
+        if(items.get(position) instanceof Movie) {
+            Movie movie = (Movie) items.get(position);
+            title = movie.getTitle();
+            poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
+        } else if (items.get(position) instanceof TVShow) {
+            TVShow tvShow = (TVShow) items.get(position);
+            title = tvShow.getName();
+            poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
+        }
 
         holder.tvTitle.setText(title);
         Glide.with(context)
