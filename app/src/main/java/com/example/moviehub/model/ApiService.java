@@ -2,6 +2,7 @@ package com.example.moviehub.model;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ApiService {
@@ -16,6 +17,9 @@ public interface ApiService {
     Call<MovieList> getTopRatedMovies();
     @GET("movie/upcoming?api_key=" + apiKey)
     Call<MovieList> getUpcomingMovies();
+    @GET("movie/{movie_id}?api_key=" + apiKey)
+    Call<Movie> getMovieDetails(@Path("movie_id") int movieId);
+
 
 //    TV Show
     @GET("tv/airing_today?api_key=" + apiKey)

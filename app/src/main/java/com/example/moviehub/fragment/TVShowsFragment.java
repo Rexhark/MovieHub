@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.moviehub.MainActivity;
+import com.example.moviehub.activity.MainActivity;
 import com.example.moviehub.R;
 import com.example.moviehub.adapter.HListAdapter;
 import com.example.moviehub.adapter.HListAdapter2;

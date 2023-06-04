@@ -16,4 +16,9 @@
     <string name="on_the_air">On The Air</string>
     <string name="popular_tv_shows">Popular TV Shows</string>
     <string name="top_rated_tv_shows">Top Rated TV Shows</string>
+    <string name="genre">Genre</string>
+    <string name="original_language">Original language</string>
+    <string name="_18">18+</string>
+    <string name="release_date">Release date</string>
+    <string name="overview">Overview</string>
 </resources>

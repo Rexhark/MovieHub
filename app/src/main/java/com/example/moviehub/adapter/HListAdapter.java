@@ -1,6 +1,7 @@
 package com.example.moviehub.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
+import com.example.moviehub.activity.DetailActivity;
 import com.example.moviehub.model.Movie;
 import com.example.moviehub.model.TVShow;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -37,24 +40,34 @@ public class HListAdapter extends RecyclerView.Adapter<HListAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull HListAdapter.ViewHolder holder, int position) {
 
-        String title = "", poster = "";
+        String id = "", title = "", posterPath = "";
 
         if(items.get(position) instanceof Movie) {
             Movie movie = (Movie) items.get(position);
+            id = String.valueOf(movie.getId());
+            System.out.println(id);
             title = movie.getTitle();
-            poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
+            posterPath = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
         } else if (items.get(position) instanceof TVShow) {
             TVShow tvShow = (TVShow) items.get(position);
+            id = String.valueOf(tvShow.getId());
             title = tvShow.getName();
-            poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
+            posterPath = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
         }
 
         holder.tvTitle.setText(title);
         Glide.with(context)
-                .load(poster)
+                .load(posterPath)
                 .centerCrop()
                 .into(holder.ivPoster);
 
+        String finalId = id;
+        System.out.println(finalId);
+        holder.container.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("id", finalId);
+            context.startActivity(intent);
+        });
 
     }
 
@@ -64,10 +77,12 @@ public class HListAdapter extends RecyclerView.Adapter<HListAdapter.ViewHolder>{
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        MaterialCardView container;
         ImageView ivPoster;
         TextView tvTitle;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            container = itemView.findViewById(R.id.container);
             ivPoster = itemView.findViewById(R.id.iv_poster);
             tvTitle = itemView.findViewById(R.id.tv_title);
         }
