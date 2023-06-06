@@ -40,16 +40,17 @@ public class HListAdapter extends RecyclerView.Adapter<HListAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull HListAdapter.ViewHolder holder, int position) {
 
-        String id = "", title = "", posterPath = "";
+        String id = "", title = "", posterPath = "", type="";
 
         if(items.get(position) instanceof Movie) {
             Movie movie = (Movie) items.get(position);
+            type = "movie";
             id = String.valueOf(movie.getId());
-            System.out.println(id);
             title = movie.getTitle();
             posterPath = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
         } else if (items.get(position) instanceof TVShow) {
             TVShow tvShow = (TVShow) items.get(position);
+            type = "tvshow";
             id = String.valueOf(tvShow.getId());
             title = tvShow.getName();
             posterPath = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
@@ -62,10 +63,11 @@ public class HListAdapter extends RecyclerView.Adapter<HListAdapter.ViewHolder>{
                 .into(holder.ivPoster);
 
         String finalId = id;
-        System.out.println(finalId);
+        String finalType = type;
         holder.container.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("id", finalId);
+            intent.putExtra("type", finalType);
             context.startActivity(intent);
         });
 

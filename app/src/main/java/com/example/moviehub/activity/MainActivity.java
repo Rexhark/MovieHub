@@ -1,5 +1,8 @@
 package com.example.moviehub.activity;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -16,9 +19,9 @@ import com.example.moviehub.fragment.MoviesFragment;
 import com.example.moviehub.fragment.TVShowsFragment;
 import com.example.moviehub.model.ApiConfig;
 import com.example.moviehub.model.Movie;
-import com.example.moviehub.model.MovieList;
+import com.example.moviehub.model.MovieListResponse;
 import com.example.moviehub.model.TVShow;
-import com.example.moviehub.model.TVShowList;
+import com.example.moviehub.model.TVShowListResponse;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -60,15 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentContainer.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        fragmentMoviesApiLoad(moviesFragment);
-        fragmentTVShowsApiLoad(tvShowsFragment);
 
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-            fragmentContainer.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, moviesFragment).commit();
-        }, 1000);
+        initialLoad(moviesFragment);
 
         bottomNav.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.movies){
@@ -86,13 +82,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void fragmentMoviesApiLoad(MoviesFragment moviesFragment){
-        Call<MovieList> call;
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    private void initialLoad(MoviesFragment moviesFragment){
+        fragmentMoviesApiLoad();
+        fragmentTVShowsApiLoad();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, moviesFragment).commit();
+    }
+
+    public void fragmentMoviesApiLoad(){
+        Call<MovieListResponse> call;
 //      Now Playing Movies
         call = ApiConfig.getApiService().getNowPlayingMovies();
-        call.enqueue(new Callback<MovieList>() {
+        call.enqueue(new Callback<MovieListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<MovieList> call, @NonNull retrofit2.Response<MovieList> response) {
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                 assert response.body() != null;
                 for (Movie movie : response.body().getMovies()) {
                     Movie movieItem = new Movie();
@@ -104,15 +112,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<MovieList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      Popular Movies
         call = ApiConfig.getApiService().getPopularMovies();
-        call.enqueue(new Callback<MovieList>() {
+        call.enqueue(new Callback<MovieListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<MovieList> call, @NonNull retrofit2.Response<MovieList> response) {
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                 assert response.body() != null;
                 for (Movie movie : response.body().getMovies()) {
                     Movie movieItem = new Movie();
@@ -124,15 +132,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<MovieList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      Top Rated Movies
         call = ApiConfig.getApiService().getTopRatedMovies();
-        call.enqueue(new Callback<MovieList>() {
+        call.enqueue(new Callback<MovieListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<MovieList> call, @NonNull retrofit2.Response<MovieList> response) {
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                 assert response.body() != null;
                 for (Movie movie : response.body().getMovies()) {
                     Movie movieItem = new Movie();
@@ -144,15 +152,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<MovieList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      Upcoming Movies
         call = ApiConfig.getApiService().getUpcomingMovies();
-        call.enqueue(new Callback<MovieList>() {
+        call.enqueue(new Callback<MovieListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<MovieList> call, @NonNull retrofit2.Response<MovieList> response) {
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                 assert response.body() != null;
                 for (Movie movie : response.body().getMovies()) {
                     Movie movieItem = new Movie();
@@ -164,19 +172,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<MovieList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
+        fragmentContainer.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
-    public void fragmentTVShowsApiLoad(TVShowsFragment tvShowsFragment) {
-        Call<TVShowList> call;
+    public void fragmentTVShowsApiLoad() {
+        Call<TVShowListResponse> call;
 //      Airing Today TV Shows
         call = ApiConfig.getApiService().getAiringTodayTVShows();
-        call.enqueue(new Callback<TVShowList>() {
+        call.enqueue(new Callback<TVShowListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TVShowList> call, @NonNull retrofit2.Response<TVShowList> response) {
+            public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                 assert response.body() != null;
                 for (TVShow tvShow : response.body().getTVShows()) {
                     TVShow tvShowItem = new TVShow();
@@ -188,15 +198,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<TVShowList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      On The Air TV Shows
         call = ApiConfig.getApiService().getOnTheAirTVShows();
-        call.enqueue(new Callback<TVShowList>() {
+        call.enqueue(new Callback<TVShowListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TVShowList> call, @NonNull retrofit2.Response<TVShowList> response) {
+            public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                 assert response.body() != null;
                 for (TVShow tvShow : response.body().getTVShows()) {
                     TVShow tvShowItem = new TVShow();
@@ -208,15 +218,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<TVShowList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      Popular TV Shows
         call = ApiConfig.getApiService().getPopularTVShows();
-        call.enqueue(new Callback<TVShowList>() {
+        call.enqueue(new Callback<TVShowListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TVShowList> call, @NonNull retrofit2.Response<TVShowList> response) {
+            public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                 assert response.body() != null;
                 for (TVShow tvShow : response.body().getTVShows()) {
                     TVShow tvShowItem = new TVShow();
@@ -228,15 +238,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<TVShowList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
 //      Top Rated TV Shows
         call = ApiConfig.getApiService().getTopRatedTVShows();
-        call.enqueue(new Callback<TVShowList>() {
+        call.enqueue(new Callback<TVShowListResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TVShowList> call, @NonNull retrofit2.Response<TVShowList> response) {
+            public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                 assert response.body() != null;
                 for (TVShow tvShow : response.body().getTVShows()) {
                     TVShow tvShowItem = new TVShow();
@@ -248,10 +258,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<TVShowList> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
             }
         });
+        fragmentContainer.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
     public List<Movie> getNowPlayingMoviesList() {

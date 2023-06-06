@@ -33,7 +33,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/now_playing"/>
                     <TextView
-                        android:id="@+id/tv_show_all"
+                        android:id="@+id/tv_show_all_now_playing"
                         android:layout_width="62dp"
                         android:layout_height="wrap_content"
                         android:textSize="11sp"
