@@ -2,31 +2,39 @@ package com.example.moviehub.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.moviehub.activity.ListActivity;
-import com.example.moviehub.activity.MainActivity;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.moviehub.R;
+import com.example.moviehub.activity.ListActivity;
 import com.example.moviehub.adapter.HListAdapter;
 import com.example.moviehub.adapter.HListAdapter2;
 import com.example.moviehub.adapter.VListAdapter;
+import com.example.moviehub.model.ApiConfig;
 import com.example.moviehub.model.Movie;
+import com.example.moviehub.model.MovieListResponse;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MoviesFragment extends Fragment {
     TextView tvShowAllNowPlaying, tvShowAllPopular, tvShowAllTopRated, tvShowAllUpcoming;
     RecyclerView rvNowPlaying, rvPopular, rvTopRated, rvUpcoming;
-    Intent intent;
+    List<Movie> nowPlayingMoviesList, popularMoviesList, topRatedMoviesList, upcomingMoviesList;
+    HListAdapter hListAdapter;
+    HListAdapter2 hListAdapter2;
+    VListAdapter vListAdapter;
+
     public MoviesFragment() {
         // Required empty public constructor
     }
@@ -50,29 +58,13 @@ public class MoviesFragment extends Fragment {
         tvShowAllTopRated = view.findViewById(R.id.tv_show_all_top_rated);
         tvShowAllUpcoming = view.findViewById(R.id.tv_show_all_upcoming);
 
-        new Handler().postDelayed(() -> {
-            rvNowPlaying.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-            rvPopular.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-            rvTopRated.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-            rvUpcoming.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        }, 1000);
+        nowPlayingMoviesList = new ArrayList<>();
+        popularMoviesList = new ArrayList<>();
+        topRatedMoviesList = new ArrayList<>();
+        upcomingMoviesList = new ArrayList<>();
+        loadApi();
 
-        List<Movie> nowPlayingMoviesList = ((MainActivity) requireActivity()).getNowPlayingMoviesList().subList(0,10);
-        List<Movie> popularMoviesList = ((MainActivity) requireActivity()).getPopularMoviesList().subList(0,5);
-        List<Movie> topRatedMoviesList = ((MainActivity) requireActivity()).getTopRatedMoviesList().subList(0,5);
-        List<Movie> upcomingMoviesList = ((MainActivity) requireActivity()).getUpcomingMoviesList().subList(0,5);
-
-        HListAdapter adapter = new HListAdapter(getContext(), nowPlayingMoviesList);
-        VListAdapter adapter2 = new VListAdapter(getContext(), popularMoviesList);
-        VListAdapter adapter3 = new VListAdapter(getContext(), topRatedMoviesList);
-        HListAdapter2 adapter4 = new HListAdapter2(getContext(), upcomingMoviesList);
-
-        rvNowPlaying.setAdapter(adapter);
-        rvPopular.setAdapter(adapter2);
-        rvTopRated.setAdapter(adapter3);
-        rvUpcoming.setAdapter(adapter4);
-
-        intent = new Intent(getContext(), ListActivity.class);
+        Intent intent = new Intent(getContext(), ListActivity.class);
         tvShowAllNowPlaying.setOnClickListener(v -> {
             intent.putExtra("type", "movie");
             intent.putExtra("type2", "nowPlaying");
@@ -96,5 +88,133 @@ public class MoviesFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    public void loadApi(){
+        Call<MovieListResponse> call;
+        //      Now Playing Movies
+        call = ApiConfig.getApiService().getNowPlayingMovies(1);
+        call.enqueue(new Callback<MovieListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
+                assert response.body() != null;
+                for (Movie movie : response.body().getMovies()) {
+                    Movie movieItem = new Movie();
+                    movieItem.setAdult(movie.isAdult());
+                    movieItem.setBackdropPath(movie.getBackdropPath());
+                    movieItem.setId(movie.getId());
+                    movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                    movieItem.setOriginalTitle(movie.getOriginalTitle());
+                    movieItem.setOverview(movie.getOverview());
+                    movieItem.setPopularity(movie.getPopularity());
+                    movieItem.setPosterPath(movie.getPosterPath());
+                    movieItem.setReleaseDate(movie.getReleaseDate());
+                    movieItem.setTitle(movie.getTitle());
+                    movieItem.setVoteAverage(movie.getVoteAverage());
+                    movieItem.setVoteCount(movie.getVoteCount());
+                    nowPlayingMoviesList.add(movieItem);
+                }
+                hListAdapter = new HListAdapter(getContext(), nowPlayingMoviesList);
+                rvNowPlaying.setAdapter(hListAdapter);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Data tidak terload!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        //      Popular Movies
+        call = ApiConfig.getApiService().getPopularMovies(1);
+        call.enqueue(new Callback<MovieListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
+                assert response.body() != null;
+                for (Movie movie : response.body().getMovies()) {
+                    Movie movieItem = new Movie();
+                    movieItem.setAdult(movie.isAdult());
+                    movieItem.setBackdropPath(movie.getBackdropPath());
+                    movieItem.setId(movie.getId());
+                    movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                    movieItem.setOriginalTitle(movie.getOriginalTitle());
+                    movieItem.setOverview(movie.getOverview());
+                    movieItem.setPopularity(movie.getPopularity());
+                    movieItem.setPosterPath(movie.getPosterPath());
+                    movieItem.setReleaseDate(movie.getReleaseDate());
+                    movieItem.setTitle(movie.getTitle());
+                    movieItem.setVoteAverage(movie.getVoteAverage());
+                    movieItem.setVoteCount(movie.getVoteCount());
+                    popularMoviesList.add(movieItem);
+                }
+                vListAdapter = new VListAdapter(getContext(), popularMoviesList);
+                rvPopular.setAdapter(vListAdapter);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Data tidak terload!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        //      Top Rated Movies
+        call = ApiConfig.getApiService().getTopRatedMovies(1);
+        call.enqueue(new Callback<MovieListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
+                assert response.body() != null;
+                for (Movie movie : response.body().getMovies()) {
+                    Movie movieItem = new Movie();
+                    movieItem.setAdult(movie.isAdult());
+                    movieItem.setBackdropPath(movie.getBackdropPath());
+                    movieItem.setId(movie.getId());
+                    movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                    movieItem.setOriginalTitle(movie.getOriginalTitle());
+                    movieItem.setOverview(movie.getOverview());
+                    movieItem.setPopularity(movie.getPopularity());
+                    movieItem.setPosterPath(movie.getPosterPath());
+                    movieItem.setReleaseDate(movie.getReleaseDate());
+                    movieItem.setTitle(movie.getTitle());
+                    movieItem.setVoteAverage(movie.getVoteAverage());
+                    movieItem.setVoteCount(movie.getVoteCount());
+                    topRatedMoviesList.add(movieItem);
+                }
+                hListAdapter2 = new HListAdapter2(getContext(), topRatedMoviesList);
+                rvTopRated.setAdapter(hListAdapter2);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Data tidak terload!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        //      Upcoming Movies
+        call = ApiConfig.getApiService().getUpcomingMovies(1);
+        call.enqueue(new Callback<MovieListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
+                assert response.body() != null;
+                for (Movie movie : response.body().getMovies()) {
+                    Movie movieItem = new Movie();
+                    movieItem.setAdult(movie.isAdult());
+                    movieItem.setBackdropPath(movie.getBackdropPath());
+                    movieItem.setId(movie.getId());
+                    movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                    movieItem.setOriginalTitle(movie.getOriginalTitle());
+                    movieItem.setOverview(movie.getOverview());
+                    movieItem.setPopularity(movie.getPopularity());
+                    movieItem.setPosterPath(movie.getPosterPath());
+                    movieItem.setReleaseDate(movie.getReleaseDate());
+                    movieItem.setTitle(movie.getTitle());
+                    movieItem.setVoteAverage(movie.getVoteAverage());
+                    movieItem.setVoteCount(movie.getVoteCount());
+                    upcomingMoviesList.add(movieItem);
+                }
+                vListAdapter = new VListAdapter(getContext(), upcomingMoviesList);
+                rvUpcoming.setAdapter(vListAdapter);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(getContext(), "Data tidak terload!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

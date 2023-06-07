@@ -41,7 +41,7 @@ public class HListAdapter2 extends RecyclerView.Adapter<HListAdapter2.ViewHolder
 
         String id = "", posterPath = "", type="";
 
-        if(items.get(position) instanceof Movie) {
+        if (items.get(position) instanceof Movie) {
             Movie movie = (Movie) items.get(position);
             type = "movie";
             id = String.valueOf(movie.getId());
@@ -53,10 +53,17 @@ public class HListAdapter2 extends RecyclerView.Adapter<HListAdapter2.ViewHolder
             posterPath = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
         }
 
-        Glide.with(context)
-                .load(posterPath)
-                .centerCrop()
-                .into(holder.ivPoster);
+        if (posterPath.contains("null")) {
+            Glide.with(context)
+                    .load(R.drawable.image_placeholder)
+                    .centerCrop()
+                    .into(holder.ivPoster);
+        } else {
+            Glide.with(context)
+                    .load(posterPath)
+                    .centerCrop()
+                    .into(holder.ivPoster);
+        }
 
         String finalId = id;
         String finalType = type;

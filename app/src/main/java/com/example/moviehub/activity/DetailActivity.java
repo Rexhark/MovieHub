@@ -1,40 +1,67 @@
 package com.example.moviehub.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.adapter.CastAdapter;
+import com.example.moviehub.database.DatabaseHelper;
 import com.example.moviehub.model.ApiConfig;
 import com.example.moviehub.model.Cast;
 import com.example.moviehub.model.CreditResponse;
+import com.example.moviehub.model.Favorite;
 import com.example.moviehub.model.Genre;
 import com.example.moviehub.model.Movie;
 import com.example.moviehub.model.TVShow;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
-    ImageView ivBackdrop, ivPoster;
+    RelativeLayout container;
+    ProgressBar progressBar;
+    LinearLayout refreshContainer;
+    ImageView ivBackdrop, ivPoster, ivRefresh;
     TextView tvTitle, tvGenre, tvAdult, tvOverview, tvDuration;
     RatingBar ratingBar;
-    List<Cast> castList;
     RecyclerView rvCast;
     CastAdapter castAdapter;
+    DatabaseHelper dbHelper;
+    int id_;
+    String title_, type_, posterPath_;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,123 +78,245 @@ public class DetailActivity extends AppCompatActivity {
         ratingBar = findViewById(R.id.rating_bar);
         rvCast = findViewById(R.id.rv_cast);
 
+        container = findViewById(R.id.container);
+        progressBar = findViewById(R.id.progress_bar);
+        refreshContainer = findViewById(R.id.refresh_container);
+        ivRefresh = findViewById(R.id.iv_refresh);
+
+        dbHelper = new DatabaseHelper(this);
+        id_ = 0;
+        title_ = "";
+        type_ = "";
+        posterPath_ = "";
+
+        if (!isNetworkConnected()) {
+
+            refreshContainer.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            container.setVisibility(View.GONE);
+
+            ivRefresh.setOnClickListener(v -> {
+                refreshContainer.setVisibility(View.GONE);
+                container.setVisibility(View.GONE);
+                progressBar.setVisibility(View.GONE);
+                finish();
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+            });
+
+        } else {
+
+            progressBar.setVisibility(View.VISIBLE);
+            container.setVisibility(View.GONE);
+            refreshContainer.setVisibility(View.GONE);
+
+            String id = getIntent().getStringExtra("id");
+            String type = getIntent().getStringExtra("type");
+
+            List<Cast> castList = new ArrayList<>();
+
+            if (type.equals("movie")) {
+                loadMovieDetail(Integer.parseInt(id), castList);
+            }
+            else if (type.equals("tvshow")) {
+                System.out.println(id+ " "+type);
+                loadTvShowDetail(Integer.parseInt(id), castList);
+            }
+
+            ActionBar actionBar = getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    public void loadMovieDetail(int id, List<Cast> castList){
+        Call<Movie> call = ApiConfig.getApiService().getMovieDetails(id);
+        call.enqueue(new Callback<Movie>() {
+            @Override
+            public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
+                Movie movie = response.body();
+
+                assert movie != null;
+                String title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+                StringBuilder genreList = new StringBuilder();
+                for (Genre genre : movie.getGenres()) {
+                    genreList.append(genre.getName()).append(", ");
+                }
+                String duration = movie.getRuntime() / 60 + "h " + movie.getRuntime() % 60 + "m";
+                genreList.deleteCharAt(genreList.length()-2);
+                String adult = movie.isAdult() ? "18+" : "PG";
+                String overview = movie.getOverview();
+                double rating = movie.getVoteAverage() / 2;
+                String poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
+                String backdrop = "https://image.tmdb.org/t/p/original" + movie.getBackdropPath();
+                if (movie.getBackdropPath() == null) {
+                    backdrop = "https://image.tmdb.org/t/p/original" + movie.getPosterPath();
+                }
+
+                Glide.with(DetailActivity.this)
+                        .load(poster)
+                        .centerCrop()
+                        .into(ivPoster);
+
+                Glide.with(DetailActivity.this)
+                        .load(backdrop)
+                        .centerCrop()
+                        .into(ivBackdrop);
+
+                ratingBar.setRating((float) rating);
+                tvTitle.setText(title);
+                tvGenre.setText(genreList);
+                tvAdult.setText(adult);
+                tvOverview.setText(overview);
+                tvDuration.setText(duration);
+
+                id_ = movie.getId();
+                title_ = movie.getTitle();
+                type_ = "movie";
+                posterPath_ = poster;
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
+                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+        Call<CreditResponse> callCredit = ApiConfig.getApiService().getMovieCredits(id);
+        callCredit.enqueue(new Callback<CreditResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreditResponse> call, @NonNull Response<CreditResponse> response) {
+                CreditResponse credit = response.body();
+                assert credit != null;
+                castList.addAll(credit.getCast());
+                castAdapter = new CastAdapter(DetailActivity.this, castList);
+                rvCast.setAdapter(castAdapter);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreditResponse> call, @NonNull Throwable t) {
+                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+        progressBar.setVisibility(View.GONE);
+        refreshContainer.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
+    }
+
+    public void loadTvShowDetail(int id, List<Cast> castList){
+        Call<TVShow> call = ApiConfig.getApiService().getTVShowDetails(id);
+        call.enqueue(new Callback<TVShow>() {
+            @Override
+            public void onResponse(@NonNull Call<TVShow> call, @NonNull Response<TVShow> response) {
+                TVShow tvShow = response.body();
+
+                assert tvShow != null;
+                String name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
+                StringBuilder genreList = new StringBuilder();
+                for (Genre genre : tvShow.getGenres()) {
+                    System.out.println(genre.getName());
+                    genreList.append(genre.getName()).append(", ");
+                }
+                String episode = tvShow.getNumberOfEpisodes() + " Episodes";
+                genreList.deleteCharAt(genreList.length()-2);
+                String adult = tvShow.isAdult() ? "18+" : "PG";
+                String overview = tvShow.getOverview();
+                double rating = tvShow.getVoteAverage() / 2;
+                String poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
+                String backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getBackdropPath();
+                if (tvShow.getBackdropPath() == null) {
+                    backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getPosterPath();
+                }
+
+                Glide.with(DetailActivity.this)
+                        .load(poster)
+                        .centerCrop()
+                        .into(ivPoster);
+
+                Glide.with(DetailActivity.this)
+                        .load(backdrop)
+                        .centerCrop()
+                        .into(ivBackdrop);
+
+                ratingBar.setRating((float) rating);
+                tvTitle.setText(name);
+                tvDuration.setText(episode);
+                tvGenre.setText(genreList);
+                tvAdult.setText(adult);
+                tvOverview.setText(overview);
+
+                id_ = tvShow.getId();
+                title_ = tvShow.getName();
+                type_ = "tvshow";
+                posterPath_ = poster;
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TVShow> call, @NonNull Throwable t) {
+                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+        Call<CreditResponse> callCredit = ApiConfig.getApiService().getTVShowCredits(id);
+        callCredit.enqueue(new Callback<CreditResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CreditResponse> call, @NonNull Response<CreditResponse> response) {
+                CreditResponse credit = response.body();
+                assert credit != null;
+                castList.addAll(credit.getCast());
+                castAdapter = new CastAdapter(DetailActivity.this, castList);
+                rvCast.setAdapter(castAdapter);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CreditResponse> call, @NonNull Throwable t) {
+                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+        progressBar.setVisibility(View.GONE);
+        refreshContainer.setVisibility(View.GONE);
+        container.setVisibility(View.VISIBLE);
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_menu, menu);
+
+        MenuItem btnFavorite = menu.findItem(R.id.btn_favorite);
         String id = getIntent().getStringExtra("id");
-        String type = getIntent().getStringExtra("type");
-        castList = new ArrayList<>();
 
-        if (type.equals("movie")) {
-            Call<Movie> call = ApiConfig.getApiService().getMovieDetails(Integer.parseInt(id));
-            call.enqueue(new Callback<Movie>() {
-                @Override
-                public void onResponse(@NonNull Call<Movie> call, @NonNull Response<Movie> response) {
-                    Movie movie = response.body();
-
-                    assert movie != null;
-                    String title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
-                    StringBuilder genreList = new StringBuilder();
-                    for (Genre genre : movie.getGenres()) {
-                        genreList.append(genre.getName()).append(", ");
-                    }
-                    String duration = movie.getRuntime() / 60 + "h " + movie.getRuntime() % 60 + "m";
-                    genreList.deleteCharAt(genreList.length()-2);
-                    String adult = movie.isAdult() ? "18+" : "PG";
-                    String overview = movie.getOverview();
-                    double rating = movie.getVoteAverage() / 2;
-                    String poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
-                    String backdrop = "https://image.tmdb.org/t/p/w500" + movie.getBackdropPath();
-                    if (movie.getBackdropPath() == null) {
-                        backdrop = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
-                    }
-
-                    Glide.with(DetailActivity.this)
-                            .load(poster)
-                            .centerCrop()
-                            .into(ivPoster);
-
-                    Glide.with(DetailActivity.this)
-                            .load(backdrop)
-                            .centerCrop()
-                            .into(ivBackdrop);
-
-                    ratingBar.setRating((float) rating);
-                    tvTitle.setText(title);
-                    tvGenre.setText(genreList);
-                    tvAdult.setText(adult);
-                    tvOverview.setText(overview);
-                    tvDuration.setText(duration);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
-                    Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                    t.printStackTrace();
-                }
-            });
-            Call<CreditResponse> callCredit = ApiConfig.getApiService().getMovieCredits(Integer.parseInt(id));
-            callCredit.enqueue(new Callback<CreditResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<CreditResponse> call, @NonNull Response<CreditResponse> response) {
-                    CreditResponse credit = response.body();
-                    assert credit != null;
-                    castList.addAll(credit.getCast());
-                    castAdapter = new CastAdapter(DetailActivity.this, castList);
-                    rvCast.setAdapter(castAdapter);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<CreditResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                    t.printStackTrace();
-                }
-            });
-        }
-        else if (type.equals("tvshow")) {
-            Call<TVShow> call = ApiConfig.getApiService().getTVShowDetails(Integer.parseInt(id));
-            call.enqueue(new Callback<TVShow>() {
-                @Override
-                public void onResponse(@NonNull Call<TVShow> call, @NonNull Response<TVShow> response) {
-                    TVShow tvShow = response.body();
-
-                    assert tvShow != null;
-                    String name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
-                    StringBuilder genreList = new StringBuilder();
-                    for (Genre genre : tvShow.getGenres()) {
-                        System.out.println(genre.getName());
-                        genreList.append(genre.getName()).append(", ");
-                    }
-                    genreList.deleteCharAt(genreList.length()-2);
-                    System.out.println(genreList);
-                    String adult = tvShow.isAdult() ? "18+" : "All ages";
-                    String overview = tvShow.getOverview();
-                    String poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
-                    String backdrop = "https://image.tmdb.org/t/p/w500" + tvShow.getBackdropPath();
-                    if (tvShow.getBackdropPath() == null) {
-                        backdrop = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
-                    }
-
-                    Glide.with(DetailActivity.this)
-                            .load(poster)
-                            .centerCrop()
-                            .into(ivPoster);
-
-                    Glide.with(DetailActivity.this)
-                            .load(backdrop)
-                            .centerCrop()
-                            .into(ivBackdrop);
-
-                    tvTitle.setText(name);
-                    tvGenre.setText(genreList);
-                    tvAdult.setText(adult);
-                    tvOverview.setText(overview);
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<TVShow> call, @NonNull Throwable t) {
-                    Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                    t.printStackTrace();
-                }
-            });
+        if (dbHelper.isFavorite(Integer.parseInt(id))){
+            btnFavorite.setIcon(R.drawable.favorite_red);
+        } else {
+            btnFavorite.setIcon(R.drawable.favorite);
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()==android.R.id.home){
+            this.finish();
+        } else if (item.getItemId()==R.id.btn_favorite){
+            if (dbHelper.isFavorite(id_)){
+                dbHelper.deleteFavorite(id_);
+                item.setIcon(R.drawable.favorite);
+                Toast.makeText(this, "Removed from favorite", Toast.LENGTH_SHORT).show();
+            } else {
+                dbHelper.addFavorite(new Favorite(id_, title_, type_, posterPath_));
+                item.setIcon(R.drawable.favorite_red);
+                Toast.makeText(this, "Added to favorite", Toast.LENGTH_SHORT).show();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

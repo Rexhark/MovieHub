@@ -14,19 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.model.Cast;
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.ViewHolder>{
 
-    private final List<Cast> items;
+    private List<Cast> items;
     private final Context context;
 
     public CastAdapter(Context context, List<Cast> items) {
         this.context = context;
         this.items = items;
     }
+
+    public void setItems(List<Cast> items) {
+        this.items = items;
+    }
+
     @NonNull
     @Override
     public CastAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,10 +50,17 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.ViewHolder>{
 
         holder.tvName.setText(name);
         holder.tvCharacter.setText(character);
-        Glide.with(context)
-                .load(portraitPath)
-                .centerCrop()
-                .into(holder.ivPortrait);
+        if (cast.getProfilePath() != null) {
+            Glide.with(context)
+                    .load(portraitPath)
+                    .centerCrop()
+                    .into(holder.ivPortrait);
+        } else {
+            Glide.with(context)
+                    .load(R.drawable.profile_placeholder)
+                    .centerCrop()
+                    .into(holder.ivPortrait);
+        }
 
     }
 

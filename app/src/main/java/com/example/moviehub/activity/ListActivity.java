@@ -4,9 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -28,8 +34,10 @@ import retrofit2.Callback;
 public class ListActivity extends AppCompatActivity {
     ProgressBar progressBar;
     RecyclerView rvList;
+    LinearLayout refreshContainer;
+    ImageView ivRefresh;
     VListAdapter vListAdapter;
-    String type, type2;
+    String type, type2, title;
     private List<Movie> nowPlayingMoviesList, popularMoviesList, topRatedMoviesList, upcomingMoviesList;
     private List<TVShow> airingTodayTVShowsList, onTheAirTVShowsList, popularTVShowsList, topRatedTVShowsList;
 
@@ -40,69 +48,110 @@ public class ListActivity extends AppCompatActivity {
 
         rvList = findViewById(R.id.rv_list);
         progressBar = findViewById(R.id.progress_bar);
+        refreshContainer = findViewById(R.id.refresh_container);
+        ivRefresh = findViewById(R.id.iv_refresh);
 
         type = getIntent().getStringExtra("type");
         type2 = getIntent().getStringExtra("type2");
 
-        rvList.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        if (!isNetworkConnected()) {
+            refreshContainer.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+            rvList.setVisibility(View.GONE);
 
-        Handler handler = new Handler();
-
-        if (Objects.equals(type, "movie")){
-            fragmentMoviesApiLoad(type2);
-            handler.postDelayed(() -> {
-                rvList.setVisibility(View.VISIBLE);
+            ivRefresh.setOnClickListener(v -> {
+                refreshContainer.setVisibility(View.GONE);
+                rvList.setVisibility(View.GONE);
                 progressBar.setVisibility(View.GONE);
-            }, 1000);
-            if (Objects.equals(type2, "nowPlaying")) {
-                vListAdapter = new VListAdapter(this, nowPlayingMoviesList);
-            } else if (Objects.equals(type2, "popular")) {
-                vListAdapter = new VListAdapter(this, popularMoviesList);
-            } else if (Objects.equals(type2, "topRated")) {
-                vListAdapter = new VListAdapter(this, topRatedMoviesList);
-            } else if (Objects.equals(type2, "upcoming")) {
-                vListAdapter = new VListAdapter(this, upcomingMoviesList);
-            }
-            rvList.setAdapter(vListAdapter);
+                finish();
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+            });
         }
-        else if (Objects.equals(type, "tvshow")){
-            fragmentTVShowsApiLoad(type2);
-            handler.postDelayed(() -> {
-                rvList.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.GONE);
-            }, 1000);
-            if (Objects.equals(type2, "airingToday")) {
-                vListAdapter = new VListAdapter(this, airingTodayTVShowsList);
-            } else if (Objects.equals(type2, "onTheAir")) {
-                vListAdapter = new VListAdapter(this, onTheAirTVShowsList);
-            } else if (Objects.equals(type2, "popular")) {
-                vListAdapter = new VListAdapter(this, popularTVShowsList);
-            } else if (Objects.equals(type2, "topRated")) {
-                vListAdapter = new VListAdapter(this, topRatedTVShowsList);
-            }
-            rvList.setAdapter(vListAdapter);
-        }
+        else {
+            progressBar.setVisibility(View.VISIBLE);
+            refreshContainer.setVisibility(View.GONE);
+            rvList.setVisibility(View.GONE);
 
+            if (Objects.equals(type, "movie")){
+                if (Objects.equals(type2, "nowPlaying")) {
+                    loadNowplaying();
+                    title = "Now Playing";
+                } else if (Objects.equals(type2, "popular")) {
+                    loadPopularMovies();
+                    title = "Popular";
+                } else if (Objects.equals(type2, "topRated")) {
+                    loadTopRatedMovies();
+                    title = "Top Rated";
+                } else if (Objects.equals(type2, "upcoming")) {
+                    loadUpcomingMovies();
+                    title = "Upcoming";
+                }
+            }
+            else if (Objects.equals(type, "tvshow")){
+                if (Objects.equals(type2, "airingToday")) {
+                    loadAiringToday();
+                    title = "Airing Today";
+                } else if (Objects.equals(type2, "onTheAir")) {
+                    loadOnTheAir();
+                    title = "On The Air";
+                } else if (Objects.equals(type2, "popular")) {
+                    loadPopularTvShow();
+                    title = "Popular";
+                } else if (Objects.equals(type2, "topRated")) {
+                    loadTopRatedTvShow();
+                    title = "Top Rated";
+                }
+                rvList.setAdapter(vListAdapter);
+            }
+
+            Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
-    public void fragmentMoviesApiLoad(String type){
-        Call<MovieListResponse> call;
-        //  Now Playing Movies
-        if (Objects.equals(type, "nowPlaying")){
-            nowPlayingMoviesList = new ArrayList<>();
-            call = ApiConfig.getApiService().getNowPlayingMovies();
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId()==android.R.id.home){
+            this.finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void loadNowplaying(){
+        nowPlayingMoviesList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<MovieListResponse> call = ApiConfig.getApiService().getNowPlayingMovies(page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
                         Movie movieItem = new Movie();
+                        movieItem.setAdult(movie.isAdult());
+                        movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                        movieItem.setOriginalTitle(movie.getOriginalTitle());
+                        movieItem.setOverview(movie.getOverview());
+                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
+                        movieItem.setReleaseDate(movie.getReleaseDate());
+                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setVoteAverage(movie.getVoteAverage());
+                        movieItem.setVoteCount(movie.getVoteCount());
                         nowPlayingMoviesList.add(movieItem);
                     }
+                    vListAdapter = new VListAdapter(ListActivity.this, nowPlayingMoviesList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -111,21 +160,36 @@ public class ListActivity extends AppCompatActivity {
                 }
             });
         }
-        //  Popular Movies
-        else if (Objects.equals(type, "popular")) {
-            popularMoviesList = new ArrayList<>();
-            call = ApiConfig.getApiService().getPopularMovies();
+    }
+
+    public void loadPopularMovies(){
+        popularMoviesList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<MovieListResponse> call = ApiConfig.getApiService().getPopularMovies(page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
                         Movie movieItem = new Movie();
+                        movieItem.setAdult(movie.isAdult());
+                        movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                        movieItem.setOriginalTitle(movie.getOriginalTitle());
+                        movieItem.setOverview(movie.getOverview());
+                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
+                        movieItem.setReleaseDate(movie.getReleaseDate());
+                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setVoteAverage(movie.getVoteAverage());
+                        movieItem.setVoteCount(movie.getVoteCount());
                         popularMoviesList.add(movieItem);
                     }
+                    vListAdapter = new VListAdapter(ListActivity.this, popularMoviesList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -134,21 +198,36 @@ public class ListActivity extends AppCompatActivity {
                 }
             });
         }
-        //  Top Rated Movies
-        else if (Objects.equals(type, "topRated")) {
-            topRatedMoviesList = new ArrayList<>();
-            call = ApiConfig.getApiService().getTopRatedMovies();
+    }
+
+    public void loadTopRatedMovies(){
+        topRatedMoviesList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<MovieListResponse> call = ApiConfig.getApiService().getTopRatedMovies(page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
                         Movie movieItem = new Movie();
+                        movieItem.setAdult(movie.isAdult());
+                        movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                        movieItem.setOriginalTitle(movie.getOriginalTitle());
+                        movieItem.setOverview(movie.getOverview());
+                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
+                        movieItem.setReleaseDate(movie.getReleaseDate());
+                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setVoteAverage(movie.getVoteAverage());
+                        movieItem.setVoteCount(movie.getVoteCount());
                         topRatedMoviesList.add(movieItem);
                     }
+                    vListAdapter = new VListAdapter(ListActivity.this, topRatedMoviesList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -157,21 +236,36 @@ public class ListActivity extends AppCompatActivity {
                 }
             });
         }
-        //  Upcoming Movies
-        else if (Objects.equals(type, "upcoming")) {
-            upcomingMoviesList = new ArrayList<>();
-            call = ApiConfig.getApiService().getUpcomingMovies();
+    }
+
+    public void loadUpcomingMovies(){
+        upcomingMoviesList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<MovieListResponse> call = ApiConfig.getApiService().getUpcomingMovies(page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
                         Movie movieItem = new Movie();
+                        movieItem.setAdult(movie.isAdult());
+                        movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
+                        movieItem.setOriginalTitle(movie.getOriginalTitle());
+                        movieItem.setOverview(movie.getOverview());
+                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
+                        movieItem.setReleaseDate(movie.getReleaseDate());
+                        movieItem.setTitle(movie.getTitle());
+                        movieItem.setVoteAverage(movie.getVoteAverage());
+                        movieItem.setVoteCount(movie.getVoteCount());
                         upcomingMoviesList.add(movieItem);
                     }
+                    vListAdapter = new VListAdapter(ListActivity.this, upcomingMoviesList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -182,92 +276,34 @@ public class ListActivity extends AppCompatActivity {
         }
     }
 
-    public void fragmentTVShowsApiLoad(String type) {
-        Call<TVShowListResponse> call;
-        //  Airing Today TV Shows
-        if (Objects.equals(type, "airingToday")){
-            airingTodayTVShowsList = new ArrayList<>();
-            call = ApiConfig.getApiService().getAiringTodayTVShows();
+    public void loadAiringToday(){
+        airingTodayTVShowsList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<TVShowListResponse> call = ApiConfig.getApiService().getAiringTodayTVShows(page);
             call.enqueue(new Callback<TVShowListResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                     assert response.body() != null;
                     for (TVShow tvShow : response.body().getTVShows()) {
                         TVShow tvShowItem = new TVShow();
+                        tvShowItem.setBackdropPath(tvShow.getBackdropPath());
+                        tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                         tvShowItem.setId(tvShow.getId());
                         tvShowItem.setName(tvShow.getName());
+                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
+                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
+                        tvShowItem.setOriginalName(tvShow.getOriginalName());
+                        tvShowItem.setOverview(tvShow.getOverview());
+                        tvShowItem.setPopularity(tvShow.getPopularity());
                         tvShowItem.setPosterPath(tvShow.getPosterPath());
+                        tvShowItem.setVoteAverage(tvShow.getVoteAverage());
+                        tvShowItem.setVoteCount(tvShow.getVoteCount());
                         airingTodayTVShowsList.add(tvShowItem);
                     }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        //  On The Air TV Shows
-        else if (Objects.equals(type, "onTheAir")) {
-            onTheAirTVShowsList = new ArrayList<>();
-            call = ApiConfig.getApiService().getOnTheAirTVShows();
-            call.enqueue(new Callback<TVShowListResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
-                    assert response.body() != null;
-                    for (TVShow tvShow : response.body().getTVShows()) {
-                        TVShow tvShowItem = new TVShow();
-                        tvShowItem.setId(tvShow.getId());
-                        tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setPosterPath(tvShow.getPosterPath());
-                        onTheAirTVShowsList.add(tvShowItem);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        //  Popular TV Shows
-        else if (Objects.equals(type, "popular")) {
-            popularTVShowsList = new ArrayList<>();
-            call = ApiConfig.getApiService().getPopularTVShows();
-            call.enqueue(new Callback<TVShowListResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
-                    assert response.body() != null;
-                    for (TVShow tvShow : response.body().getTVShows()) {
-                        TVShow tvShowItem = new TVShow();
-                        tvShowItem.setId(tvShow.getId());
-                        tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setPosterPath(tvShow.getPosterPath());
-                        popularTVShowsList.add(tvShowItem);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        //  Top Rated TV Shows
-        else if (Objects.equals(type, "topRated")) {
-            topRatedTVShowsList = new ArrayList<>();
-            call = ApiConfig.getApiService().getTopRatedTVShows();
-            call.enqueue(new Callback<TVShowListResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
-                    assert response.body() != null;
-                    for (TVShow tvShow : response.body().getTVShows()) {
-                        TVShow tvShowItem = new TVShow();
-                        tvShowItem.setId(tvShow.getId());
-                        tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setPosterPath(tvShow.getPosterPath());
-                        topRatedTVShowsList.add(tvShowItem);
-                    }
+                    vListAdapter = new VListAdapter(ListActivity.this, airingTodayTVShowsList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -277,4 +313,119 @@ public class ListActivity extends AppCompatActivity {
             });
         }
     }
+
+    public void loadOnTheAir(){
+        onTheAirTVShowsList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<TVShowListResponse> call = ApiConfig.getApiService().getOnTheAirTVShows(page);
+            call.enqueue(new Callback<TVShowListResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
+                    assert response.body() != null;
+                    for (TVShow tvShow : response.body().getTVShows()) {
+                        TVShow tvShowItem = new TVShow();
+                        tvShowItem.setBackdropPath(tvShow.getBackdropPath());
+                        tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
+                        tvShowItem.setId(tvShow.getId());
+                        tvShowItem.setName(tvShow.getName());
+                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
+                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
+                        tvShowItem.setOriginalName(tvShow.getOriginalName());
+                        tvShowItem.setOverview(tvShow.getOverview());
+                        tvShowItem.setPopularity(tvShow.getPopularity());
+                        tvShowItem.setPosterPath(tvShow.getPosterPath());
+                        tvShowItem.setVoteAverage(tvShow.getVoteAverage());
+                        tvShowItem.setVoteCount(tvShow.getVoteCount());
+                        onTheAirTVShowsList.add(tvShowItem);
+                    }
+                    vListAdapter = new VListAdapter(ListActivity.this, onTheAirTVShowsList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
+                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    public void loadPopularTvShow(){
+        popularTVShowsList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<TVShowListResponse> call = ApiConfig.getApiService().getPopularTVShows(page);
+            call.enqueue(new Callback<TVShowListResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
+                    assert response.body() != null;
+                    for (TVShow tvShow : response.body().getTVShows()) {
+                        TVShow tvShowItem = new TVShow();
+                        tvShowItem.setBackdropPath(tvShow.getBackdropPath());
+                        tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
+                        tvShowItem.setId(tvShow.getId());
+                        tvShowItem.setName(tvShow.getName());
+                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
+                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
+                        tvShowItem.setOriginalName(tvShow.getOriginalName());
+                        tvShowItem.setOverview(tvShow.getOverview());
+                        tvShowItem.setPopularity(tvShow.getPopularity());
+                        tvShowItem.setPosterPath(tvShow.getPosterPath());
+                        tvShowItem.setVoteAverage(tvShow.getVoteAverage());
+                        tvShowItem.setVoteCount(tvShow.getVoteCount());
+                        popularTVShowsList.add(tvShowItem);
+                    }
+                    vListAdapter = new VListAdapter(ListActivity.this, popularTVShowsList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
+                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    public void loadTopRatedTvShow(){
+        topRatedTVShowsList = new ArrayList<>();
+        for (int page = 1; page <= 5; page++) {
+            Call<TVShowListResponse> call = ApiConfig.getApiService().getTopRatedTVShows(page);
+            call.enqueue(new Callback<TVShowListResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
+                    assert response.body() != null;
+                    for (TVShow tvShow : response.body().getTVShows()) {
+                        TVShow tvShowItem = new TVShow();
+                        tvShowItem.setBackdropPath(tvShow.getBackdropPath());
+                        tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
+                        tvShowItem.setId(tvShow.getId());
+                        tvShowItem.setName(tvShow.getName());
+                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
+                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
+                        tvShowItem.setOriginalName(tvShow.getOriginalName());
+                        tvShowItem.setOverview(tvShow.getOverview());
+                        tvShowItem.setPopularity(tvShow.getPopularity());
+                        tvShowItem.setPosterPath(tvShow.getPosterPath());
+                        tvShowItem.setVoteAverage(tvShow.getVoteAverage());
+                        tvShowItem.setVoteCount(tvShow.getVoteCount());
+                        topRatedTVShowsList.add(tvShowItem);
+                    }
+                    vListAdapter = new VListAdapter(ListActivity.this, topRatedTVShowsList);
+                    rvList.setAdapter(vListAdapter);
+                    rvList.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
+                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
 }
