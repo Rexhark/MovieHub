@@ -105,14 +105,9 @@ public class TVShowsFragment extends Fragment {
                     tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                     tvShowItem.setId(tvShow.getId());
                     tvShowItem.setName(tvShow.getName());
-                    tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                    tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                    tvShowItem.setOriginalName(tvShow.getOriginalName());
                     tvShowItem.setOverview(tvShow.getOverview());
-                    tvShowItem.setPopularity(tvShow.getPopularity());
                     tvShowItem.setPosterPath(tvShow.getPosterPath());
                     tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                    tvShowItem.setVoteCount(tvShow.getVoteCount());
                     airingTodayTVShowsList.add(tvShowItem);
                 }
                 hListAdapter = new HListAdapter(getContext(), airingTodayTVShowsList);
@@ -136,14 +131,9 @@ public class TVShowsFragment extends Fragment {
                     tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                     tvShowItem.setId(tvShow.getId());
                     tvShowItem.setName(tvShow.getName());
-                    tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                    tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                    tvShowItem.setOriginalName(tvShow.getOriginalName());
                     tvShowItem.setOverview(tvShow.getOverview());
-                    tvShowItem.setPopularity(tvShow.getPopularity());
                     tvShowItem.setPosterPath(tvShow.getPosterPath());
                     tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                    tvShowItem.setVoteCount(tvShow.getVoteCount());
                     onTheAirTVShowsList.add(tvShowItem);
                 }
                 vListAdapter = new VListAdapter(getContext(), onTheAirTVShowsList);
@@ -167,14 +157,9 @@ public class TVShowsFragment extends Fragment {
                     tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                     tvShowItem.setId(tvShow.getId());
                     tvShowItem.setName(tvShow.getName());
-                    tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                    tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                    tvShowItem.setOriginalName(tvShow.getOriginalName());
                     tvShowItem.setOverview(tvShow.getOverview());
-                    tvShowItem.setPopularity(tvShow.getPopularity());
                     tvShowItem.setPosterPath(tvShow.getPosterPath());
                     tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                    tvShowItem.setVoteCount(tvShow.getVoteCount());
                     popularTVShowsList.add(tvShowItem);
                 }
                 hListAdapter2 = new HListAdapter2(getContext(), popularTVShowsList);
@@ -198,14 +183,9 @@ public class TVShowsFragment extends Fragment {
                     tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                     tvShowItem.setId(tvShow.getId());
                     tvShowItem.setName(tvShow.getName());
-                    tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                    tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                    tvShowItem.setOriginalName(tvShow.getOriginalName());
                     tvShowItem.setOverview(tvShow.getOverview());
-                    tvShowItem.setPopularity(tvShow.getPopularity());
                     tvShowItem.setPosterPath(tvShow.getPosterPath());
                     tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                    tvShowItem.setVoteCount(tvShow.getVoteCount());
                     topRatedTVShowsList.add(tvShowItem);
                 }
                 vListAdapter = new VListAdapter(getContext(), topRatedTVShowsList);

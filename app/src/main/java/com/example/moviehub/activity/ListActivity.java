@@ -137,15 +137,11 @@ public class ListActivity extends AppCompatActivity {
                         movieItem.setAdult(movie.isAdult());
                         movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
-                        movieItem.setOriginalTitle(movie.getOriginalTitle());
                         movieItem.setOverview(movie.getOverview());
-                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
                         movieItem.setReleaseDate(movie.getReleaseDate());
                         movieItem.setTitle(movie.getTitle());
                         movieItem.setVoteAverage(movie.getVoteAverage());
-                        movieItem.setVoteCount(movie.getVoteCount());
                         nowPlayingMoviesList.add(movieItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, nowPlayingMoviesList);
@@ -175,15 +171,11 @@ public class ListActivity extends AppCompatActivity {
                         movieItem.setAdult(movie.isAdult());
                         movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
-                        movieItem.setOriginalTitle(movie.getOriginalTitle());
                         movieItem.setOverview(movie.getOverview());
-                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
                         movieItem.setReleaseDate(movie.getReleaseDate());
                         movieItem.setTitle(movie.getTitle());
                         movieItem.setVoteAverage(movie.getVoteAverage());
-                        movieItem.setVoteCount(movie.getVoteCount());
                         popularMoviesList.add(movieItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, popularMoviesList);
@@ -213,15 +205,11 @@ public class ListActivity extends AppCompatActivity {
                         movieItem.setAdult(movie.isAdult());
                         movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
-                        movieItem.setOriginalTitle(movie.getOriginalTitle());
                         movieItem.setOverview(movie.getOverview());
-                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
                         movieItem.setReleaseDate(movie.getReleaseDate());
                         movieItem.setTitle(movie.getTitle());
                         movieItem.setVoteAverage(movie.getVoteAverage());
-                        movieItem.setVoteCount(movie.getVoteCount());
                         topRatedMoviesList.add(movieItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, topRatedMoviesList);
@@ -251,15 +239,11 @@ public class ListActivity extends AppCompatActivity {
                         movieItem.setAdult(movie.isAdult());
                         movieItem.setBackdropPath(movie.getBackdropPath());
                         movieItem.setId(movie.getId());
-                        movieItem.setOriginalLanguage(movie.getOriginalLanguage());
-                        movieItem.setOriginalTitle(movie.getOriginalTitle());
                         movieItem.setOverview(movie.getOverview());
-                        movieItem.setPopularity(movie.getPopularity());
                         movieItem.setPosterPath(movie.getPosterPath());
                         movieItem.setReleaseDate(movie.getReleaseDate());
                         movieItem.setTitle(movie.getTitle());
                         movieItem.setVoteAverage(movie.getVoteAverage());
-                        movieItem.setVoteCount(movie.getVoteCount());
                         upcomingMoviesList.add(movieItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, upcomingMoviesList);
@@ -290,14 +274,9 @@ public class ListActivity extends AppCompatActivity {
                         tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                         tvShowItem.setId(tvShow.getId());
                         tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                        tvShowItem.setOriginalName(tvShow.getOriginalName());
                         tvShowItem.setOverview(tvShow.getOverview());
-                        tvShowItem.setPopularity(tvShow.getPopularity());
                         tvShowItem.setPosterPath(tvShow.getPosterPath());
                         tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                        tvShowItem.setVoteCount(tvShow.getVoteCount());
                         airingTodayTVShowsList.add(tvShowItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, airingTodayTVShowsList);
@@ -328,14 +307,9 @@ public class ListActivity extends AppCompatActivity {
                         tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                         tvShowItem.setId(tvShow.getId());
                         tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                        tvShowItem.setOriginalName(tvShow.getOriginalName());
                         tvShowItem.setOverview(tvShow.getOverview());
-                        tvShowItem.setPopularity(tvShow.getPopularity());
                         tvShowItem.setPosterPath(tvShow.getPosterPath());
                         tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                        tvShowItem.setVoteCount(tvShow.getVoteCount());
                         onTheAirTVShowsList.add(tvShowItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, onTheAirTVShowsList);
@@ -366,14 +340,9 @@ public class ListActivity extends AppCompatActivity {
                         tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                         tvShowItem.setId(tvShow.getId());
                         tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                        tvShowItem.setOriginalName(tvShow.getOriginalName());
                         tvShowItem.setOverview(tvShow.getOverview());
-                        tvShowItem.setPopularity(tvShow.getPopularity());
                         tvShowItem.setPosterPath(tvShow.getPosterPath());
                         tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                        tvShowItem.setVoteCount(tvShow.getVoteCount());
                         popularTVShowsList.add(tvShowItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, popularTVShowsList);
@@ -404,14 +373,9 @@ public class ListActivity extends AppCompatActivity {
                         tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
                         tvShowItem.setId(tvShow.getId());
                         tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setOriginCountry(tvShow.getOriginCountry());
-                        tvShowItem.setOriginalLanguage(tvShow.getOriginalLanguage());
-                        tvShowItem.setOriginalName(tvShow.getOriginalName());
                         tvShowItem.setOverview(tvShow.getOverview());
-                        tvShowItem.setPopularity(tvShow.getPopularity());
                         tvShowItem.setPosterPath(tvShow.getPosterPath());
                         tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                        tvShowItem.setVoteCount(tvShow.getVoteCount());
                         topRatedTVShowsList.add(tvShowItem);
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, topRatedTVShowsList);
