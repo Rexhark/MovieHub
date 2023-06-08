@@ -9,8 +9,10 @@
     android:orientation="horizontal">
 
     <LinearLayout
+        android:id="@+id/main_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="visible"
         android:orientation="vertical">
         <com.google.android.material.textfield.TextInputLayout
             app:boxCornerRadiusBottomEnd="28dp"
@@ -28,7 +30,6 @@
                 android:layout_height="wrap_content"/>
         </com.google.android.material.textfield.TextInputLayout>
         <LinearLayout
-            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -69,7 +70,6 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="32dp"
         android:gravity="center"
         android:orientation="vertical">
 

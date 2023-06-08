@@ -13,7 +13,7 @@ import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favorite.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -23,6 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "(id INTEGER PRIMARY KEY, " +
                 "title TEXT, " +
                 "type TEXT, " +
+                "year INTEGER, " +
                 "poster_path TEXT)"
         );
     }
@@ -40,6 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put("id", fav.getId());
         values.put("title", fav.getTitle());
         values.put("type", fav.getType());
+        values.put("year", fav.getYear());
         values.put("poster_path", fav.getPosterPath());
 
         db.insert("favorites", null, values);
@@ -55,7 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Favorite> getAllFavorites(){
         List<Favorite> list = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String[] favoritesColumn = {"id", "title", "type", "poster_path"};
+        String[] favoritesColumn = {"id", "title", "type", "year", "poster_path"};
         Cursor cursor = db.query("favorites",
                 favoritesColumn,
                 null,
@@ -67,8 +69,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
             String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
             String type = cursor.getString(cursor.getColumnIndexOrThrow("type"));
+            int year = cursor.getInt(cursor.getColumnIndexOrThrow("year"));
             String posterPath = cursor.getString(cursor.getColumnIndexOrThrow("poster_path"));
-            Favorite fav = new Favorite(id, title, type, posterPath);
+            Favorite fav = new Favorite(id, title, type, year, posterPath);
             list.add(fav);
         }
         cursor.close();
@@ -93,5 +96,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete("favorites", null, null);
         db.close();
+    }
+
+    public List<Favorite> sortFavorites(String sort) {
+        List<Favorite> list = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM favorites ORDER BY " + sort, null);
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            String title = cursor.getString(cursor.getColumnIndexOrThrow("title"));
+            String type = cursor.getString(cursor.getColumnIndexOrThrow("type"));
+            int year = cursor.getInt(cursor.getColumnIndexOrThrow("year"));
+            String posterPath = cursor.getString(cursor.getColumnIndexOrThrow("poster_path"));
+            Favorite fav = new Favorite(id, title, type, year, posterPath);
+            list.add(fav);
+        }
+        cursor.close();
+        db.close();
+        return list;
     }
 }

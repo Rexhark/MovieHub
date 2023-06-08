@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,8 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.adapter.CastAdapter;
-import com.example.moviehub.database.DatabaseHelper;
 import com.example.moviehub.database.ApiConfig;
+import com.example.moviehub.database.DatabaseHelper;
 import com.example.moviehub.model.Cast;
 import com.example.moviehub.model.CreditResponse;
 import com.example.moviehub.model.Favorite;
@@ -40,7 +39,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
-    RelativeLayout container;
+    LinearLayout container;
     ProgressBar progressBar;
     LinearLayout refreshContainer;
     ImageView ivBackdrop, ivPoster, ivRefresh;
@@ -49,7 +48,7 @@ public class DetailActivity extends AppCompatActivity {
     RecyclerView rvCast;
     CastAdapter castAdapter;
     DatabaseHelper dbHelper;
-    int id_;
+    int id_, year_;
     String title_, type_, posterPath_;
 
     @Override
@@ -77,6 +76,7 @@ public class DetailActivity extends AppCompatActivity {
         id_ = 0;
         title_ = "";
         type_ = "";
+        year_ = 0;
         posterPath_ = "";
         ActionBar actionBar = getSupportActionBar();
 
@@ -85,6 +85,8 @@ public class DetailActivity extends AppCompatActivity {
             refreshContainer.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.GONE);
             container.setVisibility(View.GONE);
+            assert actionBar != null;
+            actionBar.setTitle("MovieHub");
 
             ivRefresh.setOnClickListener(v -> {
                 refreshContainer.setVisibility(View.GONE);
@@ -175,6 +177,11 @@ public class DetailActivity extends AppCompatActivity {
                 id_ = movie.getId();
                 title_ = movie.getTitle();
                 type_ = "movie";
+                if (movie.getReleaseDate() == null){
+                    year_ = 0;
+                } else {
+                    year_ = Integer.parseInt(movie.getReleaseDate().substring(0,4));
+                }
                 posterPath_ = poster;
             }
 
@@ -201,9 +208,9 @@ public class DetailActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+        container.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         refreshContainer.setVisibility(View.GONE);
-        container.setVisibility(View.VISIBLE);
     }
 
     public void loadTvShowDetail(int id, List<Cast> castList){
@@ -259,6 +266,11 @@ public class DetailActivity extends AppCompatActivity {
                 id_ = tvShow.getId();
                 title_ = tvShow.getName();
                 type_ = "tvshow";
+                if (tvShow.getFirstAirDate()==null){
+                    year_ = 0;
+                } else {
+                    year_ = Integer.parseInt(tvShow.getFirstAirDate().substring(0,4));
+                }
                 posterPath_ = poster;
             }
 
@@ -285,9 +297,9 @@ public class DetailActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+        container.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         refreshContainer.setVisibility(View.GONE);
-        container.setVisibility(View.VISIBLE);
     }
 
     private boolean isNetworkConnected() {
@@ -322,7 +334,7 @@ public class DetailActivity extends AppCompatActivity {
                 item.setIcon(R.drawable.favorite);
                 Toast.makeText(this, "Removed from favorite", Toast.LENGTH_SHORT).show();
             } else {
-                dbHelper.addFavorite(new Favorite(id_, title_, type_, posterPath_));
+                dbHelper.addFavorite(new Favorite(id_, title_, type_, year_, posterPath_));
                 item.setIcon(R.drawable.favorite_red);
                 Toast.makeText(this, "Added to favorite", Toast.LENGTH_SHORT).show();
             }

@@ -4,15 +4,10 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 
@@ -21,7 +16,6 @@ import com.example.moviehub.database.DatabaseHelper;
 import com.example.moviehub.fragment.FavoritesFragment;
 import com.example.moviehub.fragment.MoviesFragment;
 import com.example.moviehub.fragment.TVShowsFragment;
-import com.example.moviehub.model.Favorite;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
@@ -29,13 +23,12 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNav;
-    ProgressBar progressBar;
     FragmentContainerView fragmentContainer;
     MoviesFragment moviesFragment;
     TVShowsFragment tvShowsFragment;
     FavoritesFragment favoritesFragment;
     ImageView ivRefresh;
-    LinearLayout container;
+    LinearLayout refreshContainer;
     DatabaseHelper dbHelper;
 
     @Override
@@ -49,28 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottom_navigation);
         fragmentContainer = findViewById(R.id.fragment_container);
-        progressBar = findViewById(R.id.progress_bar);
-        container = findViewById(R.id.container);
+        refreshContainer = findViewById(R.id.refresh_container);
         ivRefresh = findViewById(R.id.iv_refresh);
 
         dbHelper = new DatabaseHelper(this);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Movie Hub");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("MovieHub");
 
-        fragmentContainer.setVisibility(View.GONE);
-        container.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
+        if (isNetworkConnected()) {
 
-        if (!isNetworkConnected()) {
-
-            progressBar.setVisibility(View.GONE);
+            refreshContainer.setVisibility(View.VISIBLE);
             fragmentContainer.setVisibility(View.GONE);
-            container.setVisibility(View.VISIBLE);
             bottomNav.setVisibility(View.GONE);
 
             ivRefresh.setOnClickListener(v -> {
-                container.setVisibility(View.GONE);
+                refreshContainer.setVisibility(View.GONE);
                 fragmentContainer.setVisibility(View.GONE);
-                progressBar.setVisibility(View.GONE);
                 finish();
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
@@ -79,14 +65,26 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
 
-            fragmentContainer.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-            container.setVisibility(View.GONE);
             bottomNav.setVisibility(View.VISIBLE);
+            fragmentContainer.setVisibility(View.VISIBLE);
+            refreshContainer.setVisibility(View.GONE);
 
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, moviesFragment).commit();
 
             bottomNav.setOnItemSelectedListener(item -> {
+                if (isNetworkConnected()) {
+                    fragmentContainer.setVisibility(View.GONE);
+                    refreshContainer.setVisibility(View.VISIBLE);
+                    bottomNav.setVisibility(View.GONE);
+
+                    ivRefresh.setOnClickListener(v -> {
+                        refreshContainer.setVisibility(View.GONE);
+                        fragmentContainer.setVisibility(View.GONE);
+                        finish();
+                        startActivity(getIntent());
+                        overridePendingTransition(0, 0);
+                    });
+                }
                 if (item.getItemId() == R.id.movies){
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, moviesFragment).commit();
                     return true;
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isNetworkConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+        return networkInfo == null || !networkInfo.isConnectedOrConnecting();
     }
 
     public DatabaseHelper getDbHelper() {

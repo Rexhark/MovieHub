@@ -20,6 +20,7 @@ import com.example.moviehub.adapter.VListAdapter;
 import com.example.moviehub.database.ApiConfig;
 import com.example.moviehub.model.Movie;
 import com.example.moviehub.model.MovieListResponse;
+import com.google.android.material.carousel.CarouselLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -37,7 +37,7 @@ import retrofit2.Callback;
 public class ListActivity extends AppCompatActivity {
     ProgressBar progressBar, progressBar2;
     RecyclerView rvList;
-    LinearLayout refreshContainer, container;
+    LinearLayout refreshContainer, mainContainer;
     ImageView ivRefresh;
     VListAdapter vListAdapter;
     String type, type2, title;
@@ -58,14 +58,15 @@ public class ListActivity extends AppCompatActivity {
         ivRefresh = findViewById(R.id.iv_refresh);
         etSearch = findViewById(R.id.et_search);
         tvNoData = findViewById(R.id.tv_no_data);
-        container = findViewById(R.id.container);
+        mainContainer = findViewById(R.id.main_container);
 
         type = getIntent().getStringExtra("type");
         type2 = getIntent().getStringExtra("type2");
 
         if (!isNetworkConnected()) {
+            Objects.requireNonNull(getSupportActionBar()).setTitle("MovieHub");
             refreshContainer.setVisibility(View.VISIBLE);
-            container.setVisibility(View.GONE);
+            mainContainer.setVisibility(View.GONE);
 
             ivRefresh.setOnClickListener(v -> {
                 refreshContainer.setVisibility(View.GONE);
@@ -77,10 +78,8 @@ public class ListActivity extends AppCompatActivity {
             });
         }
         else {
-            container.setVisibility(View.VISIBLE);
-            rvList.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
             refreshContainer.setVisibility(View.GONE);
+            mainContainer.setVisibility(View.VISIBLE);
 
             if (Objects.equals(type, "movie")){
                 if (Objects.equals(type2, "nowPlaying")) {

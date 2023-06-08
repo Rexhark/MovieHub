@@ -28,4 +28,7 @@
     <string name="refresh">refresh</string>
     <string name="belum_ada_film_atau_series_favorite">Belum ada film atau series favorite~</string>
     <string name="hasil_pencarian_tidak_ada">Hasil pencarian tidak ada!</string>
+    <string name="sort">Sort</string>
+    <string name="by_title">By title</string>
+    <string name="by_year">By year</string>
 </resources>

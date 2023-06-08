@@ -4,13 +4,15 @@ public class Favorite {
     private final int id;
     private final String title;
     private final String type;
-    private final String poster_path;
+    private final int year;
+    private final String posterPath;
 
-    public Favorite(int id, String title, String type, String poster_path) {
+    public Favorite(int id, String title, String type, int year, String posterPath) {
         this.id = id;
         this.title = title;
         this.type = type;
-        this.poster_path = poster_path;
+        this.year = year;
+        this.posterPath = posterPath;
     }
 
     public int getId() {
@@ -25,7 +27,11 @@ public class Favorite {
         return type;
     }
 
+    public int getYear() {
+        return year;
+    }
+
     public String getPosterPath() {
-        return poster_path;
+        return posterPath;
     }
 }

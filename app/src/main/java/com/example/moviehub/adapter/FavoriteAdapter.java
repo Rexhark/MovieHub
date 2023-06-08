@@ -38,7 +38,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull FavoriteAdapter.ViewHolder holder, int position) {
         Favorite favorite = items.get(position);
-        holder.tvTitle.setText(favorite.getTitle());
+        String title;
+        if (favorite.getYear() == 0) {
+            title = favorite.getTitle();
+            holder.tvTitle.setText(title);
+        } else {
+            title = favorite.getTitle() + " (" + favorite.getYear() + ")";
+            holder.tvTitle.setText(title);
+        }
 
         if (favorite.getPosterPath().contains("null")) {
             Glide.with(context)
@@ -57,6 +64,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
         } else if (favorite.getType().equals("tvshow")) {
             holder.ivType.setImageResource(R.drawable.tv_show);
         }
+
         holder.container.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("id", String.valueOf(favorite.getId()));
