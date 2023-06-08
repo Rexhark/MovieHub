@@ -24,7 +24,4 @@ public class CreditResponse {
         return cast;
     }
 
-    public void setCast(List<Cast> cast) {
-        this.cast = cast;
-    }
 }

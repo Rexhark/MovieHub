@@ -4,7 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,22 +21,10 @@ import com.example.moviehub.database.DatabaseHelper;
 import com.example.moviehub.fragment.FavoritesFragment;
 import com.example.moviehub.fragment.MoviesFragment;
 import com.example.moviehub.fragment.TVShowsFragment;
-import com.example.moviehub.model.ApiConfig;
 import com.example.moviehub.model.Favorite;
-import com.example.moviehub.model.Movie;
-import com.example.moviehub.model.MovieListResponse;
-import com.example.moviehub.model.TVShow;
-import com.example.moviehub.model.TVShowListResponse;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import retrofit2.Call;
-import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         ivRefresh = findViewById(R.id.iv_refresh);
 
         dbHelper = new DatabaseHelper(this);
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Movie Hub");
 
         fragmentContainer.setVisibility(View.GONE);
         container.setVisibility(View.GONE);

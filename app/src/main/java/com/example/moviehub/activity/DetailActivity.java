@@ -1,25 +1,12 @@
 package com.example.moviehub.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -28,11 +15,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.adapter.CastAdapter;
 import com.example.moviehub.database.DatabaseHelper;
-import com.example.moviehub.model.ApiConfig;
+import com.example.moviehub.database.ApiConfig;
 import com.example.moviehub.model.Cast;
 import com.example.moviehub.model.CreditResponse;
 import com.example.moviehub.model.Favorite;
@@ -42,9 +34,6 @@ import com.example.moviehub.model.TVShow;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -84,10 +73,12 @@ public class DetailActivity extends AppCompatActivity {
         ivRefresh = findViewById(R.id.iv_refresh);
 
         dbHelper = new DatabaseHelper(this);
+
         id_ = 0;
         title_ = "";
         type_ = "";
         posterPath_ = "";
+        ActionBar actionBar = getSupportActionBar();
 
         if (!isNetworkConnected()) {
 
@@ -116,14 +107,16 @@ public class DetailActivity extends AppCompatActivity {
             List<Cast> castList = new ArrayList<>();
 
             if (type.equals("movie")) {
+                assert actionBar != null;
+                actionBar.setTitle("Movie Detail");
                 loadMovieDetail(Integer.parseInt(id), castList);
             }
             else if (type.equals("tvshow")) {
-                System.out.println(id+ " "+type);
+                assert actionBar != null;
+                actionBar.setTitle("TV Show Detail");
                 loadTvShowDetail(Integer.parseInt(id), castList);
             }
 
-            ActionBar actionBar = getSupportActionBar();
             assert actionBar != null;
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -137,7 +130,14 @@ public class DetailActivity extends AppCompatActivity {
                 Movie movie = response.body();
 
                 assert movie != null;
-                String title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+
+                String title;
+                if (movie.getReleaseDate() == null){
+                    title = movie.getTitle();
+                }else {
+                    title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+                }
+
                 StringBuilder genreList = new StringBuilder();
                 for (Genre genre : movie.getGenres()) {
                     genreList.append(genre.getName()).append(", ");
@@ -153,15 +153,17 @@ public class DetailActivity extends AppCompatActivity {
                     backdrop = "https://image.tmdb.org/t/p/original" + movie.getPosterPath();
                 }
 
-                Glide.with(DetailActivity.this)
-                        .load(poster)
-                        .centerCrop()
-                        .into(ivPoster);
+                if(!isDestroyed()) {
+                    Glide.with(DetailActivity.this)
+                            .load(poster)
+                            .centerCrop()
+                            .into(ivPoster);
 
-                Glide.with(DetailActivity.this)
-                        .load(backdrop)
-                        .centerCrop()
-                        .into(ivBackdrop);
+                    Glide.with(DetailActivity.this)
+                            .load(backdrop)
+                            .centerCrop()
+                            .into(ivBackdrop);
+                }
 
                 ratingBar.setRating((float) rating);
                 tvTitle.setText(title);
@@ -212,7 +214,13 @@ public class DetailActivity extends AppCompatActivity {
                 TVShow tvShow = response.body();
 
                 assert tvShow != null;
-                String name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
+
+                String name;
+                if (tvShow.getFirstAirDate()==null){
+                    name = tvShow.getName();
+                }else {
+                    name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
+                }
                 StringBuilder genreList = new StringBuilder();
                 for (Genre genre : tvShow.getGenres()) {
                     System.out.println(genre.getName());
@@ -229,15 +237,17 @@ public class DetailActivity extends AppCompatActivity {
                     backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getPosterPath();
                 }
 
-                Glide.with(DetailActivity.this)
-                        .load(poster)
-                        .centerCrop()
-                        .into(ivPoster);
+                if (!isDestroyed()) {
+                    Glide.with(DetailActivity.this)
+                            .load(poster)
+                            .centerCrop()
+                            .into(ivPoster);
 
-                Glide.with(DetailActivity.this)
-                        .load(backdrop)
-                        .centerCrop()
-                        .into(ivBackdrop);
+                    Glide.with(DetailActivity.this)
+                            .load(backdrop)
+                            .centerCrop()
+                            .into(ivBackdrop);
+                }
 
                 ratingBar.setRating((float) rating);
                 tvTitle.setText(name);
@@ -319,4 +329,5 @@ public class DetailActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

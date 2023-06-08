@@ -27,7 +27,7 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
                     android:text="@string/now_playing"/>
                 <TextView
@@ -35,9 +35,10 @@
                     android:layout_width="62dp"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"/>
+                    app:drawableRightCompat="@drawable/arrow_right"
+                    app:drawableTint="@color/white" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_now_playing"
@@ -52,8 +53,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="2dp"
+            android:background="@android:color/black" />
 
         <!--Popular -->
         <LinearLayout
@@ -71,7 +72,7 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
                     android:text="@string/popular"/>
                 <TextView
@@ -79,9 +80,10 @@
                     android:layout_width="62dp"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"/>
+                    app:drawableRightCompat="@drawable/arrow_right"
+                    app:drawableTint="@color/white" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_popular"
@@ -96,8 +98,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="2dp"
+            android:background="@android:color/black" />
 
         <!-- Top Rated -->
         <LinearLayout
@@ -115,7 +117,7 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
                     android:text="@string/top_rated_movies"/>
                 <TextView
@@ -123,9 +125,10 @@
                     android:layout_width="62dp"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"/>
+                    app:drawableRightCompat="@drawable/arrow_right"
+                    app:drawableTint="@color/white" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_top_rated"
@@ -140,8 +143,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+            android:layout_height="2dp"
+            android:background="@android:color/black" />
 
         <!-- Upcoming -->
         <LinearLayout
@@ -159,7 +162,7 @@
                     android:layout_weight="1"
                     android:textStyle="bold"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:layout_height="wrap_content"
                     android:text="@string/upcoming_movies"/>
                 <TextView
@@ -167,9 +170,10 @@
                     android:layout_width="62dp"
                     android:layout_height="wrap_content"
                     android:textSize="11sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"/>
+                    app:drawableRightCompat="@drawable/arrow_right"
+                    app:drawableTint="@color/white" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_upcoming"

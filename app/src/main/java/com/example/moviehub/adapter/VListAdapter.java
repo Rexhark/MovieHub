@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -17,10 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.moviehub.R;
 import com.example.moviehub.activity.DetailActivity;
-import com.example.moviehub.model.Genre;
 import com.example.moviehub.model.Movie;
 import com.example.moviehub.model.TVShow;
-import com.google.android.material.card.MaterialCardView;
 
 import java.util.List;
 
@@ -47,7 +44,13 @@ public class VListAdapter extends RecyclerView.Adapter<VListAdapter.ViewHolder> 
         if(items.get(position) instanceof Movie) {
             Movie movie = (Movie) items.get(position);
 
-            String title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+            String title;
+            if (movie.getReleaseDate() == null){
+                title = movie.getTitle();
+            }else {
+                title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+            }
+
             String adult = movie.isAdult() ? "18+" : "PG";
             double rating = movie.getVoteAverage() / 2;
             String poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
@@ -80,7 +83,17 @@ public class VListAdapter extends RecyclerView.Adapter<VListAdapter.ViewHolder> 
         else if (items.get(position) instanceof TVShow) {
             TVShow tvShow = (TVShow) items.get(position);
 
-            String title = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
+            String name;
+            if (tvShow.getFirstAirDate() == null) {
+                name = tvShow.getName();
+            } else {
+                if (tvShow.getFirstAirDate().length()==0){
+                    name = tvShow.getName();
+                }else {
+                    name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
+                }
+            }
+
             String adult = tvShow.isAdult() ? "18+" : "PG";
             double rating = tvShow.getVoteAverage() / 2;
             String poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
@@ -93,7 +106,7 @@ public class VListAdapter extends RecyclerView.Adapter<VListAdapter.ViewHolder> 
                         .centerCrop()
                         .into(holder.ivPoster);
             }
-            holder.tvTitle.setText(title);
+            holder.tvTitle.setText(name);
             holder.tvAdult.setText(adult);
             holder.ratingBar.setRating((float) rating);
 

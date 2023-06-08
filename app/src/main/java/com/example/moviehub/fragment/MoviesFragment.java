@@ -17,7 +17,7 @@ import com.example.moviehub.activity.ListActivity;
 import com.example.moviehub.adapter.HListAdapter;
 import com.example.moviehub.adapter.HListAdapter2;
 import com.example.moviehub.adapter.VListAdapter;
-import com.example.moviehub.model.ApiConfig;
+import com.example.moviehub.database.ApiConfig;
 import com.example.moviehub.model.Movie;
 import com.example.moviehub.model.MovieListResponse;
 
@@ -183,7 +183,7 @@ public class MoviesFragment extends Fragment {
                     Movie movieItem = new Movie();
                     movieItem.setAdult(movie.isAdult());
                     movieItem.setBackdropPath(movie.getBackdropPath());
-                    movieItem.setId(movie.getId());;
+                    movieItem.setId(movie.getId());
                     movieItem.setOverview(movie.getOverview());
                     movieItem.setPosterPath(movie.getPosterPath());
                     movieItem.setReleaseDate(movie.getReleaseDate());

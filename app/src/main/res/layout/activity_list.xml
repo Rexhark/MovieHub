@@ -8,26 +8,65 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
-        android:clipToPadding="false"
-        tools:listitem="@layout/v_list_layout"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="vertical"
-        android:visibility="gone"/>
+        android:orientation="vertical">
+        <com.google.android.material.textfield.TextInputLayout
+            app:boxCornerRadiusBottomEnd="28dp"
+            app:boxCornerRadiusTopEnd="28dp"
+            app:boxCornerRadiusBottomStart="28dp"
+            app:boxCornerRadiusTopStart="28dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="6dp"
+            app:startIconDrawable="@drawable/search">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/v_list_layout"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                android:visibility="gone"/>
+            <TextView
+                android:id="@+id/tv_no_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="40dp"
+                android:visibility="gone"
+                android:text="@string/hasil_pencarian_tidak_ada"/>
+            <ProgressBar
+                android:id="@+id/progress_bar_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="40dp"
+                android:visibility="visible"/>
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/refresh_container"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingTop="32dp"
@@ -43,7 +82,9 @@
             android:id="@+id/iv_refresh"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/refresh"/>
+            app:tint="@color/white"
+            android:src="@drawable/refresh"
+            android:contentDescription="@string/refresh" />
 
     </LinearLayout>
 

@@ -19,15 +19,11 @@ import java.util.List;
 
 public class CastAdapter extends RecyclerView.Adapter<CastAdapter.ViewHolder>{
 
-    private List<Cast> items;
+    private final List<Cast> items;
     private final Context context;
 
     public CastAdapter(Context context, List<Cast> items) {
         this.context = context;
-        this.items = items;
-    }
-
-    public void setItems(List<Cast> items) {
         this.items = items;
     }
 
@@ -41,7 +37,7 @@ public class CastAdapter extends RecyclerView.Adapter<CastAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull CastAdapter.ViewHolder holder, int position) {
 
-        String name = "", character = "", portraitPath = "";
+        String name, character, portraitPath;
 
         Cast cast = items.get(position);
         name = cast.getName();

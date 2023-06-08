@@ -17,7 +17,7 @@ import com.example.moviehub.activity.ListActivity;
 import com.example.moviehub.adapter.HListAdapter;
 import com.example.moviehub.adapter.HListAdapter2;
 import com.example.moviehub.adapter.VListAdapter;
-import com.example.moviehub.model.ApiConfig;
+import com.example.moviehub.database.ApiConfig;
 import com.example.moviehub.model.TVShow;
 import com.example.moviehub.model.TVShowListResponse;
 
