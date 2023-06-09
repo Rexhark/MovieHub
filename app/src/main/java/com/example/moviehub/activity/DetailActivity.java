@@ -108,6 +108,8 @@ public class DetailActivity extends AppCompatActivity {
 
             List<Cast> castList = new ArrayList<>();
 
+            System.out.println("id: " + id);
+
             if (type.equals("movie")) {
                 assert actionBar != null;
                 actionBar.setTitle("Movie Detail");
@@ -133,38 +135,64 @@ public class DetailActivity extends AppCompatActivity {
 
                 assert movie != null;
 
+                // Cek title
                 String title;
-                if (movie.getReleaseDate() == null){
-                    title = movie.getTitle();
-                }else {
+                if (movie.getReleaseDate() != null && !movie.getReleaseDate().isEmpty()){
                     title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
                 }
+                else {
+                    title = movie.getTitle();
+                }
 
+                // Cek genre
                 StringBuilder genreList = new StringBuilder();
-                for (Genre genre : movie.getGenres()) {
-                    genreList.append(genre.getName()).append(", ");
+                if (movie.getGenres() != null && movie.getGenres().size() > 0) {
+                    for (Genre genre : movie.getGenres()) {
+                        genreList.append(genre.getName()).append(", ");
+                    }
+                    genreList.deleteCharAt(genreList.length()-2);
                 }
+                else {
+                    genreList.append("-");
+                }
+
                 String duration = movie.getRuntime() / 60 + "h " + movie.getRuntime() % 60 + "m";
-                genreList.deleteCharAt(genreList.length()-2);
                 String adult = movie.isAdult() ? "18+" : "PG";
-                String overview = movie.getOverview();
-                double rating = movie.getVoteAverage() / 2;
-                String poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
-                String backdrop = "https://image.tmdb.org/t/p/original" + movie.getBackdropPath();
-                if (movie.getBackdropPath() == null) {
-                    backdrop = "https://image.tmdb.org/t/p/original" + movie.getPosterPath();
+
+                // Cek overview
+                String overview;
+                if (movie.getOverview() != null && !movie.getOverview().isEmpty()) {
+                    overview = movie.getOverview();
+                }
+                else {
+                    overview = "-";
                 }
 
-                if(!isDestroyed()) {
-                    Glide.with(DetailActivity.this)
-                            .load(poster)
-                            .centerCrop()
-                            .into(ivPoster);
+                double rating = movie.getVoteAverage() / 2;
 
-                    Glide.with(DetailActivity.this)
-                            .load(backdrop)
-                            .centerCrop()
-                            .into(ivBackdrop);
+                String poster = "https://image.tmdb.org/t/p/w500" + movie.getPosterPath();
+
+                // Cek backdrop
+                String backdrop;
+                if (movie.getBackdropPath() == null) {
+                    backdrop = poster;
+                }
+                else {
+                    backdrop = "https://image.tmdb.org/t/p/original" + movie.getBackdropPath();
+                }
+
+                // Cek poster
+                if(!isDestroyed()) {
+                    if (movie.getPosterPath() != null) {
+                        Glide.with(DetailActivity.this)
+                                .load(poster)
+                                .centerCrop()
+                                .into(ivPoster);
+                        Glide.with(DetailActivity.this)
+                                .load(backdrop)
+                                .centerCrop()
+                                .into(ivBackdrop);
+                    }
                 }
 
                 ratingBar.setRating((float) rating);
@@ -177,17 +205,17 @@ public class DetailActivity extends AppCompatActivity {
                 id_ = movie.getId();
                 title_ = movie.getTitle();
                 type_ = "movie";
-                if (movie.getReleaseDate() == null){
-                    year_ = 0;
-                } else {
+                if (movie.getReleaseDate() != null && !movie.getReleaseDate().isEmpty()){
                     year_ = Integer.parseInt(movie.getReleaseDate().substring(0,4));
+                } else {
+                    year_ = 0;
                 }
                 posterPath_ = poster;
             }
 
             @Override
             public void onFailure(@NonNull Call<Movie> call, @NonNull Throwable t) {
-                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });
@@ -204,7 +232,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<CreditResponse> call, @NonNull Throwable t) {
-                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });
@@ -222,38 +250,65 @@ public class DetailActivity extends AppCompatActivity {
 
                 assert tvShow != null;
 
+                // Cek name
                 String name;
-                if (tvShow.getFirstAirDate()==null){
-                    name = tvShow.getName();
-                }else {
+                if (tvShow.getFirstAirDate() != null && !tvShow.getFirstAirDate().isEmpty()){
                     name = tvShow.getName() + " (" + tvShow.getFirstAirDate().substring(0,4) + ")";
                 }
+                else {
+                    name = tvShow.getName();
+                }
+
+                // Cek genre
                 StringBuilder genreList = new StringBuilder();
-                for (Genre genre : tvShow.getGenres()) {
-                    System.out.println(genre.getName());
-                    genreList.append(genre.getName()).append(", ");
+                if (tvShow.getGenres() != null && tvShow.getGenres().size() > 0) {
+                    for (Genre genre : tvShow.getGenres()) {
+                        genreList.append(genre.getName()).append(", ");
+                    }
+                    genreList.deleteCharAt(genreList.length()-2);
                 }
+                else {
+                    genreList.append("-");
+                }
+
                 String episode = tvShow.getNumberOfEpisodes() + " Episodes";
-                genreList.deleteCharAt(genreList.length()-2);
                 String adult = tvShow.isAdult() ? "18+" : "PG";
-                String overview = tvShow.getOverview();
-                double rating = tvShow.getVoteAverage() / 2;
-                String poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
-                String backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getBackdropPath();
-                if (tvShow.getBackdropPath() == null) {
-                    backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getPosterPath();
+
+                // Cek overview
+                String overview;
+                if (tvShow.getOverview() != null && !tvShow.getOverview().isEmpty()) {
+                    overview = tvShow.getOverview();
+                }
+                else {
+                    overview = "-";
                 }
 
-                if (!isDestroyed()) {
-                    Glide.with(DetailActivity.this)
-                            .load(poster)
-                            .centerCrop()
-                            .into(ivPoster);
+                double rating = tvShow.getVoteAverage() / 2;
 
-                    Glide.with(DetailActivity.this)
-                            .load(backdrop)
-                            .centerCrop()
-                            .into(ivBackdrop);
+                String poster = "https://image.tmdb.org/t/p/w500" + tvShow.getPosterPath();
+
+                // Cek backdrop
+                String backdrop;
+                if (tvShow.getBackdropPath() == null) {
+                    backdrop = poster;
+                }
+                else {
+                    backdrop = "https://image.tmdb.org/t/p/original" + tvShow.getBackdropPath();
+                }
+
+                // Cek poster
+                if (!isDestroyed()) {
+                    if (tvShow.getPosterPath() != null){
+                        Glide.with(DetailActivity.this)
+                                .load(poster)
+                                .centerCrop()
+                                .into(ivPoster);
+
+                        Glide.with(DetailActivity.this)
+                                .load(backdrop)
+                                .centerCrop()
+                                .into(ivBackdrop);
+                    }
                 }
 
                 ratingBar.setRating((float) rating);
@@ -266,17 +321,18 @@ public class DetailActivity extends AppCompatActivity {
                 id_ = tvShow.getId();
                 title_ = tvShow.getName();
                 type_ = "tvshow";
-                if (tvShow.getFirstAirDate()==null){
-                    year_ = 0;
-                } else {
+                if (tvShow.getFirstAirDate() != null && !tvShow.getFirstAirDate().isEmpty()){
                     year_ = Integer.parseInt(tvShow.getFirstAirDate().substring(0,4));
+                }
+                else {
+                    year_ = 0;
                 }
                 posterPath_ = poster;
             }
 
             @Override
             public void onFailure(@NonNull Call<TVShow> call, @NonNull Throwable t) {
-                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });
@@ -293,7 +349,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NonNull Call<CreditResponse> call, @NonNull Throwable t) {
-                Toast.makeText(DetailActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
                 t.printStackTrace();
             }
         });

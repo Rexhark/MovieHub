@@ -45,10 +45,10 @@ public class VListAdapter extends RecyclerView.Adapter<VListAdapter.ViewHolder> 
             Movie movie = (Movie) items.get(position);
 
             String title;
-            if (movie.getReleaseDate() == null){
-                title = movie.getTitle();
-            }else {
+            if (movie.getReleaseDate() != null && !movie.getReleaseDate().isEmpty()){
                 title = movie.getTitle() + " (" + movie.getReleaseDate().substring(0,4) + ")";
+            } else {
+                title = movie.getTitle();
             }
 
             String adult = movie.isAdult() ? "18+" : "PG";

@@ -9,182 +9,201 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
-
-        <!-- Now Playing -->
         <LinearLayout
+            android:id="@+id/container_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:orientation="vertical">
+            <!-- Now Playing -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_height="wrap_content"
-                    android:text="@string/now_playing"/>
-                <TextView
-                    android:id="@+id/tv_show_all_now_playing"
-                    android:layout_width="62dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"
-                    app:drawableTint="@color/white" />
-            </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_now_playing"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                tools:listitem="@layout/h_list_layout"
-                tools:itemCount="10"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@android:color/black" />
-
-        <!--Popular -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="@string/now_playing"/>
+                    <TextView
+                        android:id="@+id/tv_show_all_now_playing"
+                        android:layout_width="62dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/white"
+                        android:text="@string/show_all"
+                        app:drawableRightCompat="@drawable/arrow_right"
+                        app:drawableTint="@color/white" />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_now_playing"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/popular"/>
-                <TextView
-                    android:id="@+id/tv_show_all_popular"
-                    android:layout_width="62dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"
-                    app:drawableTint="@color/white" />
+                    android:layout_marginBottom="8dp"
+                    tools:listitem="@layout/h_list_layout"
+                    tools:itemCount="10"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_popular"
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginBottom="8dp"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="2"
-                tools:listitem="@layout/v_list_layout" />
-        </LinearLayout>
+                android:layout_height="2dp"
+                android:background="@android:color/black" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@android:color/black" />
-
-        <!-- Top Rated -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <!--Popular -->
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
-                    android:layout_height="wrap_content"
-                    android:text="@string/top_rated_movies"/>
-                <TextView
-                    android:id="@+id/tv_show_all_top_rated"
-                    android:layout_width="62dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"
-                    app:drawableTint="@color/white" />
-            </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_top_rated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                tools:listitem="@layout/h_list_layout_2"
-                tools:itemCount="10"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-        </LinearLayout>
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="@string/popular"/>
+                    <TextView
+                        android:id="@+id/tv_show_all_popular"
+                        android:layout_width="62dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/white"
+                        android:text="@string/show_all"
+                        app:drawableRightCompat="@drawable/arrow_right"
+                        app:drawableTint="@color/white" />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_popular"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/v_list_layout" />
+            </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@android:color/black" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/black" />
 
-        <!-- Upcoming -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <!-- Top Rated -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="16dp">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@color/white"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="@string/top_rated_movies"/>
+                    <TextView
+                        android:id="@+id/tv_show_all_top_rated"
+                        android:layout_width="62dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/white"
+                        android:text="@string/show_all"
+                        app:drawableRightCompat="@drawable/arrow_right"
+                        app:drawableTint="@color/white" />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_top_rated"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/upcoming_movies"/>
-                <TextView
-                    android:id="@+id/tv_show_all_upcoming"
-                    android:layout_width="62dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="11sp"
-                    android:textColor="@color/white"
-                    android:text="@string/show_all"
-                    app:drawableRightCompat="@drawable/arrow_right"
-                    app:drawableTint="@color/white" />
+                    android:layout_marginBottom="8dp"
+                    tools:listitem="@layout/h_list_layout_2"
+                    tools:itemCount="10"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
             </LinearLayout>
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_upcoming"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_marginBottom="8dp"
-                tools:listitem="@layout/v_list_layout"
-                tools:itemCount="2"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-        </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/black" />
+
+            <!-- Upcoming -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="@string/upcoming_movies"/>
+                    <TextView
+                        android:id="@+id/tv_show_all_upcoming"
+                        android:layout_width="62dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/white"
+                        android:text="@string/show_all"
+                        app:drawableRightCompat="@drawable/arrow_right"
+                        app:drawableTint="@color/white" />
+                </LinearLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_upcoming"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginBottom="8dp"
+                    tools:listitem="@layout/v_list_layout"
+                    tools:itemCount="2"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+            </LinearLayout>
+        </LinearLayout>
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="500dp"/>
+        <TextView
+            android:id="@+id/tv_no_connection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="300dp"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:text="@string/please_check_your_connection"/>
     </LinearLayout>
 </ScrollView>

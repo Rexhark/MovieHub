@@ -209,13 +209,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
-                        movie.setAdult(movie.isAdult());
-                        movie.setId(movie.getId());
-                        movie.setPosterPath(movie.getPosterPath());
-                        movie.setReleaseDate(movie.getReleaseDate());
-                        movie.setTitle(movie.getTitle());
-                        movie.setVoteAverage(movie.getVoteAverage());
-                        nowPlayingMoviesList.add(movie);
+                        if ((movie.getTitle() != null && !movie.getTitle().isEmpty())) {
+                            nowPlayingMoviesList.add(movie);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, nowPlayingMoviesList);
                     rvList.setAdapter(vListAdapter);
@@ -225,7 +221,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -240,13 +237,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
-                        movie.setAdult(movie.isAdult());
-                        movie.setId(movie.getId());
-                        movie.setPosterPath(movie.getPosterPath());
-                        movie.setReleaseDate(movie.getReleaseDate());
-                        movie.setTitle(movie.getTitle());
-                        movie.setVoteAverage(movie.getVoteAverage());
-                        popularMoviesList.add(movie);
+                        if ((movie.getTitle() != null && !movie.getTitle().isEmpty())) {
+                            popularMoviesList.add(movie);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, popularMoviesList);
                     rvList.setAdapter(vListAdapter);
@@ -256,7 +249,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -271,13 +265,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
-                        movie.setAdult(movie.isAdult());
-                        movie.setId(movie.getId());
-                        movie.setPosterPath(movie.getPosterPath());
-                        movie.setReleaseDate(movie.getReleaseDate());
-                        movie.setTitle(movie.getTitle());
-                        movie.setVoteAverage(movie.getVoteAverage());
-                        topRatedMoviesList.add(movie);
+                        if ((movie.getTitle() != null && !movie.getTitle().isEmpty())) {
+                            topRatedMoviesList.add(movie);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, topRatedMoviesList);
                     rvList.setAdapter(vListAdapter);
@@ -287,7 +277,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -302,13 +293,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                     assert response.body() != null;
                     for (Movie movie : response.body().getMovies()) {
-                        movie.setAdult(movie.isAdult());
-                        movie.setId(movie.getId());
-                        movie.setPosterPath(movie.getPosterPath());
-                        movie.setReleaseDate(movie.getReleaseDate());
-                        movie.setTitle(movie.getTitle());
-                        movie.setVoteAverage(movie.getVoteAverage());
-                        upcomingMoviesList.add(movie);
+                        if ((movie.getTitle() != null && !movie.getTitle().isEmpty())) {
+                            upcomingMoviesList.add(movie);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, upcomingMoviesList);
                     rvList.setAdapter(vListAdapter);
@@ -318,7 +305,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -333,12 +321,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                     assert response.body() != null;
                     for (TVShow tvShow : response.body().getTVShows()) {
-                        tvShow.setFirstAirDate(tvShow.getFirstAirDate());
-                        tvShow.setId(tvShow.getId());
-                        tvShow.setName(tvShow.getName());
-                        tvShow.setPosterPath(tvShow.getPosterPath());
-                        tvShow.setVoteAverage(tvShow.getVoteAverage());
-                        airingTodayTVShowsList.add(tvShow);
+                        if ((tvShow.getName() != null && !tvShow.getName().isEmpty())) {
+                            airingTodayTVShowsList.add(tvShow);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, airingTodayTVShowsList);
                     rvList.setAdapter(vListAdapter);
@@ -348,7 +333,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -363,12 +349,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                     assert response.body() != null;
                     for (TVShow tvShow : response.body().getTVShows()) {
-                        tvShow.setFirstAirDate(tvShow.getFirstAirDate());
-                        tvShow.setId(tvShow.getId());
-                        tvShow.setName(tvShow.getName());
-                        tvShow.setPosterPath(tvShow.getPosterPath());
-                        tvShow.setVoteAverage(tvShow.getVoteAverage());
-                        onTheAirTVShowsList.add(tvShow);
+                        if ((tvShow.getName() != null && !tvShow.getName().isEmpty())) {
+                            onTheAirTVShowsList.add(tvShow);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, onTheAirTVShowsList);
                     rvList.setAdapter(vListAdapter);
@@ -378,7 +361,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -393,12 +377,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                     assert response.body() != null;
                     for (TVShow tvShow : response.body().getTVShows()) {
-                        tvShow.setFirstAirDate(tvShow.getFirstAirDate());
-                        tvShow.setId(tvShow.getId());
-                        tvShow.setName(tvShow.getName());
-                        tvShow.setPosterPath(tvShow.getPosterPath());
-                        tvShow.setVoteAverage(tvShow.getVoteAverage());
-                        popularTVShowsList.add(tvShow);
+                        if ((tvShow.getName() != null && !tvShow.getName().isEmpty())) {
+                            popularTVShowsList.add(tvShow);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, popularTVShowsList);
                     rvList.setAdapter(vListAdapter);
@@ -408,7 +389,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -423,13 +405,9 @@ public class ListActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                     assert response.body() != null;
                     for (TVShow tvShow : response.body().getTVShows()) {
-                        TVShow tvShowItem = new TVShow();
-                        tvShowItem.setFirstAirDate(tvShow.getFirstAirDate());
-                        tvShowItem.setId(tvShow.getId());
-                        tvShowItem.setName(tvShow.getName());
-                        tvShowItem.setPosterPath(tvShow.getPosterPath());
-                        tvShowItem.setVoteAverage(tvShow.getVoteAverage());
-                        topRatedTVShowsList.add(tvShowItem);
+                        if ((tvShow.getName() != null && !tvShow.getName().isEmpty())) {
+                            topRatedTVShowsList.add(tvShow);
+                        }
                     }
                     vListAdapter = new VListAdapter(ListActivity.this, topRatedTVShowsList);
                     rvList.setAdapter(vListAdapter);
@@ -439,7 +417,8 @@ public class ListActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                    Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                    t.printStackTrace();
                 }
             });
         }
@@ -456,13 +435,9 @@ public class ListActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<MovieListResponse> call, @NonNull retrofit2.Response<MovieListResponse> response) {
                 assert response.body() != null;
                 for (Movie movie : response.body().getMovies()) {
-                    movie.setAdult(movie.isAdult());
-                    movie.setId(movie.getId());
-                    movie.setPosterPath(movie.getPosterPath());
-                    movie.setReleaseDate(movie.getReleaseDate());
-                    movie.setTitle(movie.getTitle());
-                    movie.setVoteAverage(movie.getVoteAverage());
-                    filteredMovieList.add(movie);
+                    if ((movie.getTitle() != null && !movie.getTitle().isEmpty())) {
+                        filteredMovieList.add(movie);
+                    }
                 }
 
                 vListAdapter = new VListAdapter(ListActivity.this, filteredMovieList);
@@ -479,7 +454,8 @@ public class ListActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(@NonNull Call<MovieListResponse> call, @NonNull Throwable t) {
-                Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
     }
@@ -495,12 +471,9 @@ public class ListActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<TVShowListResponse> call, @NonNull retrofit2.Response<TVShowListResponse> response) {
                 assert response.body() != null;
                 for (TVShow tvShow : response.body().getTVShows()) {
-                    tvShow.setFirstAirDate(tvShow.getFirstAirDate());
-                    tvShow.setId(tvShow.getId());
-                    tvShow.setName(tvShow.getName());
-                    tvShow.setPosterPath(tvShow.getPosterPath());
-                    tvShow.setVoteAverage(tvShow.getVoteAverage());
-                    filteredTvShowList.add(tvShow);
+                    if ((tvShow.getName() != null && !tvShow.getName().isEmpty())) {
+                        filteredTvShowList.add(tvShow);
+                    }
                 }
 
                 vListAdapter = new VListAdapter(ListActivity.this, filteredTvShowList);
@@ -517,7 +490,8 @@ public class ListActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(@NonNull Call<TVShowListResponse> call, @NonNull Throwable t) {
-                Toast.makeText(ListActivity.this, "Data tidak terload!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, "Please check your connnection", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
             }
         });
     }

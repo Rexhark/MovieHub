@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">H071211017 - Fitrah Ramadhan</string>
+    <string name="app_name">H071211017 - Final Mobile</string>
     <string name="movies">Movies</string>
     <string name="tv_shows">TV Shows</string>
     <string name="favorites">Favorites</string>
@@ -31,4 +31,6 @@
     <string name="sort">Sort</string>
     <string name="by_title">By title</string>
     <string name="by_year">By year</string>
+    <string name="please_check_your_connection">Please check your connection!</string>
+    <string name="moviehub">MovieHub</string>
 </resources>
